@@ -1,0 +1,38 @@
+
+<!-- 定义导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <!-- 导航栏商标 -->
+        <a class="navbar-brand" href="#">FoodAdvisor</a>
+
+        <!-- 导航入口 -->
+        <div>
+            <ul class="navbar-nav">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Restaurant Owners</a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+    <script>
+        function user_delete() {
+            // 调用layer弹窗组件
+            layer.open({
+                title: "确认删除",
+                content: "确认删除用户资料吗？",
+                yes: function(index, layero) {
+                    $('form#user_delete button').click();
+                    layer.close(index);
+                },
+            })
+        }
+    </script>
+
