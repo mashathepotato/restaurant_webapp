@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "food_advisor",
     'taggit',
+    'bootstrap4',
 ]
 
 MIDDLEWARE = [

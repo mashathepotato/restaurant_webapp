@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import FoodPost, FoodType
 from django.db.models import Q
+from .forms import UserRegisterForm
 
 def index(request):
     search = request.GET.get('search')
@@ -19,3 +20,16 @@ def index(request):
     }
     response = render(request, 'index.html', context)
     return response
+
+def user_login(request):
+    response = render(request, 'login.html')
+    return response
+
+
+def user_register(request):
+    user_register_form = UserRegisterForm()
+    context = {'form': user_register_form}
+
+    response = render(request, 'register.html', context)
+    return response
+

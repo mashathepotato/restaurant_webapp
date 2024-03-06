@@ -7,4 +7,6 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('food_advisor/', include('food_advisor.urls')),
     path('admin/', admin.site.urls),
+    path('login/',views.user_login, name='login'),
+    path('register/',views.user_register, name='register'),
 ]
