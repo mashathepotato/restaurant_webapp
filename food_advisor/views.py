@@ -33,3 +33,7 @@ def user_register(request):
     response = render(request, 'register.html', context)
     return response
 
+def owner_login(request):
+    response = render(request, 'owner_login.html')
+    return response
+
