@@ -36,7 +36,7 @@ class Review(models.Model):
     starRating = models.IntegerField(choices = STAR_CHOICES, default=0)
     
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 class Dish(models.Model):
     id = models.AutoField(primary_key=True)
