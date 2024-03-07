@@ -2,6 +2,13 @@ from django.db import models
 from django.contrib.auth.models import User
 import datetime
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    isManager = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.username
+
 STAR_CHOICES = [
         (0, '0 stars'),
         (1, '1 star'),
@@ -13,7 +20,7 @@ STAR_CHOICES = [
 
 class Restaurant(models.Model):
     id = models.AutoField(primary_key=True)
-    manager = models.OneToOneField(User, on_delete=models.CASCADE)
+    manager = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
     address = models.CharField(max_length=128)
     timeOpens = models.TimeField(default='12:00:00')
     timeCloses = models.TimeField(default='12:00:00')

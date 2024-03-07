@@ -4,7 +4,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE',
 
 import django
 django.setup()
-from food_advisor.models import User, Restaurant, Review, Dish
+from food_advisor.models import User, Restaurant, Review, Dish, UserProfile
 import datetime
 
 def populate():
@@ -61,7 +61,9 @@ def populate():
             'address': '61 Fake Dr',
             'Manager':'iHopManager',
             'open':datetime.time(7,0),
-            'close':datetime.time(0,0),}],
+            'close':datetime.time(0,0),
+            'starRating':4.23,
+            'totalReviews':23,}],
 
         [{'username':'SubwayManager',
             'email':'subway@manager.com',
@@ -72,7 +74,9 @@ def populate():
             'address':'98 False Lane',
             'Manager':'SubwayManager',
             'open':datetime.time(7,0),
-            'close':datetime.time(19,0)}],
+            'close':datetime.time(19,0),
+            'starRating':4.23,
+            'totalReviews':23,}],
 
         [{'username':'GreggsManager',
             'email':'greggs@manager.com',
@@ -83,7 +87,9 @@ def populate():
             'address':'77 Mirage St',
             'Manager':'GreggsManager',
             'open':datetime.time(5,0),
-            'close':datetime.time(21,0)}]
+            'close':datetime.time(21,0),
+            'starRating':4.23,
+            'totalReviews':23,}]
     ]
 
     for user in users:
@@ -91,7 +97,9 @@ def populate():
         
     for manager, rest_data in restaurant_managers:
         manager_user = add_user(manager['username'], manager['email'])
-        r = add_restaurant(rest_data['name'], rest_data['address'], manager_user)
+        manager_user.isManager=True
+        manager_user.save()
+        r = add_restaurant(rest_data['name'], rest_data['address'], manager_user, rest_data['starRating'], rest_data['totalReviews'])
         for d in rest_data['dishes']:
             add_dishes(r, d['name'], d['price'])
         for s in rest_data['reviews']:
@@ -115,13 +123,13 @@ def add_dishes(rest, name, price):
     d.save()
     return d
 
-def add_restaurant(name, address, manager):
+def add_restaurant(name, address, manager, starRating=1.0, totalReviews=0):
     r = Restaurant.objects.get_or_create(name=name, address=address, manager=manager)[0]
     r.name=name
     r.address=address
     r.manager=manager
-    r.starRating=0
-    r.totalReviews=0
+    r.starRating=starRating
+    r.totalReviews=totalReviews
     r.save()
     return r
     
@@ -129,7 +137,11 @@ def add_user(username, email):
     u = User.objects.get_or_create(username=username, email=email)[0]
     u.username=username
     u.email=email
-    return u
+    u.save()
+    p = UserProfile.objects.get_or_create(user=u)[0]
+    p.user=u
+    p.save()
+    return p
 
 if __name__ == '__main__':
     print('Starting food_advisor population script...')
