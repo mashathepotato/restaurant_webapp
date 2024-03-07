@@ -1,45 +1,58 @@
 from django.db import models
-
+import datetime
 
 class User(models.Model):
-    userId = models.IntegerField(default=0, primary_key=True)
-    regDate = models.IntegerField()
+    id = models.AutoField(primary_key=True)
+    regDate = models.DateTimeField(auto_now_add=True)
     username = models.CharField(max_length=128, unique=True)
     email = models.EmailField()
+
+    class Manager():
+        restaurant = models.ForeignKey('Restaurant', on_delete=models.CASCADE)
     
     def __str__(self):
         return self.username
 
+STAR_CHOICES = [
+        (0, '0 stars'),
+        (1, '1 star'),
+        (2, '2 stars'),
+        (3, '3 stars'),
+        (4, '4 stars'),
+        (5, '5 stars'),
+    ]
 
 class Restaurant(models.Model):
-    restaurantId = models.IntegerField(default=0, primary_key=True)
+    id = models.AutoField(primary_key=True)
+    manager = models.ForeignKey(User, on_delete=models.CASCADE)
     address = models.CharField(max_length=128)
-    timeOpens = models.TimeField()
-    timeCloses = models.TimeField()
-    url = models.URLField()
-    tags = models.CharField(max_length=128)
-    cuisineType = models.CharField(max_length=128)
+    timeOpens = models.TimeField(default='12:00:00')
+    timeCloses = models.TimeField(default='12:00:00')
+    tags = models.CharField(max_length=128, blank=True)
+    cuisineType = models.CharField(max_length=128, blank=True)
     name = models.CharField(max_length=128)
+    starRating = models.IntegerField(choices = STAR_CHOICES, default=0)
     
     def __str__(self):
         return self.name
 
 class Review(models.Model):
-    reviewId = models.IntegerField(default=0)
-    restaurantId = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    userId = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.CharField(1280)
+    id = models.AutoField(primary_key=True)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.CharField(max_length=1280)
     date = models.DateTimeField(auto_now_add=True)
-    replyContent = models.CharField(128)
+    replyContent = models.CharField(max_length=128, default='')
+    starRating = models.IntegerField(choices = STAR_CHOICES, default=0)
     
     def __str__(self):
-        return self.reviewId
+        return self.id
 
 class Dish(models.Model):
-    dishId = models.IntegerField(default=0)
-    restaurantId = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    id = models.AutoField(primary_key=True)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     name = models.CharField(max_length=128)
-    price = models.IntegerField(max_length=64)
+    price = models.IntegerField()
 
     class Meta:
         verbose_name_plural = 'Dishes'
