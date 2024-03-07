@@ -1,54 +1,45 @@
 from django.db import models
 from django.contrib.auth.models import User
+import datetime
 
-# This is an altered version of Madison's models, takes into account
-# that Django already provides a User model, removes unnecessary IDs,
-# and implements a few additional fields.
-
-# Using django's user auth model, already takes care of username,
-# email, password etc...
+STAR_CHOICES = [
+        (0, '0 stars'),
+        (1, '1 star'),
+        (2, '2 stars'),
+        (3, '3 stars'),
+        (4, '4 stars'),
+        (5, '5 stars'),
+    ]
 
 class Restaurant(models.Model):
+    id = models.AutoField(primary_key=True)
+    manager = models.OneToOneField(User, on_delete=models.CASCADE)
     address = models.CharField(max_length=128)
-    timeOpens = models.TimeField(null=True)
-    timeCloses = models.TimeField()
-    url = models.URLField()
-    tags = models.CharField(max_length=128) # Tags are comma separated strings.
-    cuisineType = models.CharField(max_length=128)
+    timeOpens = models.TimeField(default='12:00:00')
+    timeCloses = models.TimeField(default='12:00:00')
+    tags = models.CharField(max_length=128, null=True, blank=True)
+    cuisineType = models.CharField(max_length=128, null=True, blank=True)
     name = models.CharField(max_length=128)
-    avg_stars = models.DecimalField(decimal_places=4, max_digits=10)
-    total_ratings = models.IntegerField()
-
-    # Establish one to one relationship between managers and restaurants,
-    # doing it here means users are only managers when linked to a restaurant.
-    manager = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        # Note CASCADE, restaurants cannot exist without a manager.
-        primary_key=False,
-    )
-
-    class Meta:
-        verbose_name_plural = 'Restaurants'
+    starRating = models.DecimalField(decimal_places=4, max_digits=10, default=0)
+    totalReviews = models.IntegerField(default=0)
     
     def __str__(self):
         return self.name
 
 class Review(models.Model):
+    id = models.AutoField(primary_key=True)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.CharField(max_length=1280)
     date = models.DateTimeField(auto_now_add=True)
-    replyContent = models.CharField(max_length=1280)
-    starRating = models.IntegerField()
-
-    class Meta:
-        verbose_name_plural = 'Reviews'
+    replyContent = models.CharField(max_length=128, default='')
+    starRating = models.IntegerField(choices = STAR_CHOICES, default=0)
     
     def __str__(self):
-        return (self.user.username + self.restaurant.name)
+        return self.id
 
 class Dish(models.Model):
+    id = models.AutoField(primary_key=True)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     name = models.CharField(max_length=128)
     price = models.IntegerField()

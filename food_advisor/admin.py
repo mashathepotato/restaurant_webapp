@@ -1,7 +1,6 @@
 from django.contrib import admin
-from django.contrib.auth.models import User
-from food_advisor.models import Restaurant
-
-# Register your models here.
+from food_advisor.models import User, Restaurant, Review, Dish
 
 admin.site.register(Restaurant)
+admin.site.register(Review)
+admin.site.register(Dish)
