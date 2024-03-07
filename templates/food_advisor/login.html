@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Login</h2>
+    <form method="post" action="{% url 'food_advisor:signin' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" id="username" name="username" placeholder="Enter username">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+    <br>
+    <p>Don't have an account? <a href="{% url 'food_advisor:registerUser' %}">Register here</a></p>
+    <p><a href="#">Forgot your password?</a></p> <!-- Adjust this link according to your password reset functionality -->
+</div>
+{% endblock content %}

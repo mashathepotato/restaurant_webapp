@@ -1,14 +1,17 @@
 from django import forms
-
-from django.contrib.auth.models import User
-
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
-class UserRegisterForm(UserCreationForm):
-
-    email = forms.EmailField(label = "Email")
-
-    class Meta:
+class ManagerRegistrationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('username', 'email',)
+        fields = UserCreationForm.Meta.fields + ('email',) 
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_manager = True
+        if commit:
+            user.save()
+        return user
