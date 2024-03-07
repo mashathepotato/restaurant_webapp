@@ -31,9 +31,9 @@ def populate():
         {'username':'Sarah','email':'email@blank.com'},
         {'username':'Donahue','email':'road@runner.com'},
         {'username':'Terry','email':'user@use.com'},
-        {'username':'GreggsManager','email':'greggs@manager.com'},
-        {'username':'iHopManager','email':'ihop@manager.com'},
-        {'username':'SubwayManager','email':'subway@manager.com'}
+        {'username':'GreggsManager','email':'greggs@manager.com','restaurant':'Greggs'},
+        {'username':'iHopManager','email':'ihop@manager.com','restaurant':'iHop'},
+        {'username':'SubwayManager','email':'subway@manager.com','restaurant':'Subway'}
     ]
 
     ihop_reviews = [
@@ -76,10 +76,12 @@ def populate():
     
     for user in users:
         add_users(user['username'], user['email'])
-
+        
     for rest, rest_data in restaurants.items():
         manager_user = User.objects.get(username=rest_data['Manager'])
         r = add_restaurant(rest, rest_data['address'], manager_user)
+        manager_user.rest = r
+        manager_user.save()
         for d in rest_data['dishes']:
             add_dishes(r, d['name'], d['price'])
         for s in rest_data['reviews']:
@@ -112,10 +114,11 @@ def add_restaurant(name, address, manager):
     r.save()
     return r
     
-def add_users(username, email):
+def add_users(username, email, restaurant=None):
     u = User.objects.get_or_create(username=username, email=email)[0]
     u.username=username
     u.email=email
+    u.rest=restaurant
     return u
     
 if __name__ == '__main__':
