@@ -5,8 +5,6 @@ app_name = 'food_advisor'
 
 urlpatterns = [
     path('', views.index, name='index'), # No home page url, index is home page.
-
-    # Uncomment when appropriate views are created.
     # path('register/', views.registerUser, name='registerUser'),
     # path('register/manager/', views.registerManager, name='registerManager'), # This page also includes restaurant detail entry.
     # path('signin/', views.user_signin, name='signin'),
