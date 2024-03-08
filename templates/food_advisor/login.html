@@ -29,7 +29,7 @@
                 </div>
                 <div class="card-footer text-center">
                     <p>Don't have an account? <a href="{% url 'food_advisor:registerUser' %}">Register here</a></p>
-                    <p><a href="/">Forgot your password?</a></p>
+                    <p><a href="{% url 'food_advisor:password_reset'%}">Forgot your password?</a></p>
                 </div>
             </div>
         </div>
