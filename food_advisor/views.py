@@ -117,6 +117,16 @@ def registerUser(request):
         form = UserCreationForm()
     return render(request, 'food_advisor/register.html', {'form': form})
 
+def registerOwner(request):
+    if request.method == 'POST':
+        form = ManagerRegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('food_advisor:index')
+    else:
+        form = ManagerRegistrationForm()
+    return render(request, 'food_advisor/owner.html', {'form': form})
+
 #@login_required
 #def restricted(request):
 #    return render(request, 'rango/restricted.html')
