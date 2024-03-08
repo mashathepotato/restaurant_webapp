@@ -18,6 +18,14 @@ STAR_CHOICES = [
         (5, '5 stars'),
     ]
 
+class CuisineType(models.Model):
+    name = models.CharField(max_length=128, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+
 class Restaurant(models.Model):
     id = models.AutoField(primary_key=True)
     manager = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
@@ -25,10 +33,11 @@ class Restaurant(models.Model):
     timeOpens = models.TimeField(default='12:00:00')
     timeCloses = models.TimeField(default='12:00:00')
     tags = models.CharField(max_length=128, null=True, blank=True)
-    cuisineType = models.CharField(max_length=128, null=True, blank=True)
+    cuisineTypes = models.ManyToManyField(CuisineType, blank=True)
     name = models.CharField(max_length=128)
     starRating = models.DecimalField(decimal_places=4, max_digits=10, default=0)
     totalReviews = models.IntegerField(default=0)
+    image = models.ImageField(upload_to='restaurant_images', blank=True)
     
     def __str__(self):
         return self.name
