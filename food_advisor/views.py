@@ -115,7 +115,7 @@ def registerUser(request):
             return redirect('food_advisor:index')
     else:
         form = UserCreationForm()
-    return render(request, 'food_advisor/register.html')
+    return render(request, 'food_advisor/register.html', {'form': form})
 
 #@login_required
 #def restricted(request):
