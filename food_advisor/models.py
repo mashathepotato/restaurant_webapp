@@ -29,6 +29,7 @@ class Restaurant(models.Model):
     name = models.CharField(max_length=128)
     starRating = models.DecimalField(decimal_places=4, max_digits=10, default=0)
     totalReviews = models.IntegerField(default=0)
+    image = models.ImageField(upload_to='restaurant_images', blank=True)
     
     def __str__(self):
         return self.name
