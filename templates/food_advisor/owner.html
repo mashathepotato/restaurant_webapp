@@ -35,7 +35,7 @@
                 </div>
                 <div class="card-footer text-center">
                     <p>Already a member? <a href="{% url 'food_advisor:signin' %}">Sign in here</a></p>
-                    <p><a href="/">Forgot your password?</a></p>
+                    <p><a href="{% url 'food_advisor:password_reset'%}">Forgot your password?</a></p>
                 </div>
             </div>
         </div>

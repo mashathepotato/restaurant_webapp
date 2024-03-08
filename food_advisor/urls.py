@@ -11,6 +11,7 @@ urlpatterns = [
     # path('register/manager/', views.registerManager, name='registerManager'), # This page also includes restaurant detail entry.
     path('signin/', views.user_signin, name='signin'),
     path('owner/', views.registerOwner, name='owner'),
+    path('password_reset/', views.password_reset, name='password_reset')
     # path('restaurant/<slug:restaurant_id_slug>/', views.show_restaurant, name='showRestaurant'),
     # path('restaurant/<slug:restaurant_id_slug>/manage/', views.manage_restaurant, name="manageRestaurant"),
     # path('signout/', views.user_signout, name='signout'),

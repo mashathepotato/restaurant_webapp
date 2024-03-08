@@ -127,6 +127,11 @@ def registerOwner(request):
         form = ManagerRegistrationForm()
     return render(request, 'food_advisor/owner.html', {'form': form})
 
+def password_reset(request):
+    return render(request, 'food_advisor/password_reset.html')
+
+def nothing(request):
+    return render(request, 'nothing.html')
 #@login_required
 #def restricted(request):
 #    return render(request, 'rango/restricted.html')

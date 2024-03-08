@@ -7,4 +7,5 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('food_advisor/', include('food_advisor.urls')),
     path('admin/', admin.site.urls),
+    path('nothing/', views.nothing, name='nothing'),
 ]
