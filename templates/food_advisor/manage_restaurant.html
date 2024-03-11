@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Food Advisor - {{ restaurant.name }} (Manager Interface)
+{% endblock title %}
+
+{% block content %}
+    {% if restaurant %}
+        <div>
+            <form enctype="multipart/form-data" id="restaurant_manage_form" method="post" action="{% url 'food_advisor:manage_restaurant' restaurant.id %}">
+                {% csrf_token %}
+                {% for field in form.visible_fields %}
+                    {{ field.errors }}
+                    {{ field.help_text }}
+                    {{ field }}<br />
+                {% endfor %}
+                <input type="submit" name="submit" value="Update Restaurant Info" />
+            </form>
+        </div>
+    {% else %}
+        The specified restaurant does not exist.
+    {% endif %}
+{% endblock content %}

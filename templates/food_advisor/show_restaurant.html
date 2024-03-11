@@ -66,6 +66,9 @@
             {% endif %}
         </div>
 
+        <!-- This should only be visible to the restaurant's manager, add later. -->
+        <a href="{% url 'food_advisor:manage_restaurant' restaurant.id %}">Manage Restaurant Info</a>
+
     {% else %}
         The specified restaurant does not exist.
     {% endif %}

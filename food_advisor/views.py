@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate  
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from .forms import ManagerRegistrationForm
+from .forms import ManagerRegistrationForm, RestaurantEditForm
 from django.shortcuts import render, get_object_or_404
 
 def index(request):
@@ -147,6 +147,29 @@ def show_restaurant(request, restaurant_id_slug):
 
 def show_restaurant_reviews(request, restaurant_id_slug):
     return redirect('rango:index')
+
+def manage_restaurant(request, restaurant_id_slug):
+    try:
+        restaurant = Restaurant.objects.get(id=restaurant_id_slug)
+    except Restaurant.DoesNotExist:
+        restaurant = None
+
+    if restaurant is None:
+        return redirect('/food_advisor/')
+    
+    form = RestaurantEditForm(instance=restaurant)
+
+    if request.method == "POST":
+        form = RestaurantEditForm(request.POST, request.FILES, instance=restaurant)
+
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('food_advisor:show_restaurant', kwargs={'restaurant_id_slug':restaurant_id_slug}))
+        else:
+            print(form.errors)
+
+    context_dict = {'form': form, 'restaurant':restaurant}
+    return render(request, 'food_advisor/manage_restaurant.html', context_dict)
 
 #def manage_restaurant(request, restaurant_id_slug):
     # placeholder view logic for managing a restaurant
