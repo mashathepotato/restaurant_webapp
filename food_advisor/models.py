@@ -41,6 +41,10 @@ class Restaurant(models.Model):
     
     def __str__(self):
         return self.name
+    
+    def getIntegerStars(self):
+        # Rounds average stars to integer for displaying star images.
+        return int(round(self.starRating))
 
 class Review(models.Model):
     id = models.AutoField(primary_key=True)

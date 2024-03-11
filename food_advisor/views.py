@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Restaurant, Review, User 
+from .models import Restaurant, Review, User, Dish
 from django.contrib.auth.forms import UserCreationForm  
 from django.contrib.auth import login, authenticate  
 from django.shortcuts import render, redirect
@@ -122,9 +122,30 @@ def user_login(request):
   #  if not val:
    #     val = default_val
 #return val
-#def show_restaurant(request, restaurant_id_slug):
-    # placeholder view logic here
- #   return render(request, 'food_advisor/show_restaurant.html', {})
+    
+def show_restaurant(request, restaurant_id_slug):
+    context_dict = {}
+
+    try:
+        # Get restaurant from id, if not exists, throw error.
+        restaurant = Restaurant.objects.get(id=restaurant_id_slug)
+
+        # Retrieve all dishes from restaurant.
+        dishes = Dish.objects.filter(restaurant=restaurant)
+
+        context_dict['dishes'] = dishes
+        context_dict['restaurant'] = restaurant
+
+    except Restaurant.DoesNotExist:
+        # If don't find restaurant, do nothing.
+        context_dict['restaurant'] = None
+        context_dict['dishes'] = None
+
+    # Render response and return it to the client
+    return render(request, 'food_advisor/show_restaurant.html', context=context_dict)
+
+def show_restaurant_reviews(request, restaurant_id_slug):
+    return redirect('rango:index')
 
 #def manage_restaurant(request, restaurant_id_slug):
     # placeholder view logic for managing a restaurant
