@@ -2,16 +2,8 @@
 {% load static %}
 
 {% block title %}
-    Home Page
+    Food Advisor - {{ restaurant.name }}
 {% endblock title %}
-
-{% block title_block %}
-    {% if category %}
-        {{ category.name }}
-    {% else %}
-        Unknown Category
-    {% endif %}
-{% endblock %}
 
 {% block content %}
     {% if restaurant %}

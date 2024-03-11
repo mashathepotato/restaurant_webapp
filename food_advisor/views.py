@@ -4,6 +4,7 @@ from .models import Restaurant, Review, User, Dish
 from django.contrib.auth.forms import UserCreationForm  
 from django.contrib.auth import login, authenticate  
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from .forms import ManagerRegistrationForm
 from django.shortcuts import render, get_object_or_404
 
