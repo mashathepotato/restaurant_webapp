@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Food Advisor - {{ restaurant.name }}
+{% endblock title %}
+
+{% block content %}
+    {% if restaurant %}
+        <h1>{{ restaurant.name }}</h1>
+
+        <div id="star-block">
+            {% with ''|center:restaurant.getIntegerStars as range %}
+            {% for _ in range %}
+                <img src="{% static 'images/star.png' %}">
+            {% endfor %}
+            {% endwith %}
+
+            <p>Average Star Rating: {{ restaurant.starRating|floatformat:2 }}</p>
+        </div>
+
+        <div id="image-block">
+            {% if restaurant.image %}
+                <img src="{{ restaurant.image.url }}">
+            {% endif %}
+        </div>
+
+        <div id="reviews-link-block">
+            <h3><a href="{% url 'food_advisor:show_restaurant_reviews' restaurant.id %}">View Reviews ({{ restaurant.totalReviews }})</a></h3>
+        </div>
+
+        <div id="address-block">
+            <h3>Address</h3>
+            <p>{{ restaurant.address }}</p>
+        </div>
+
+        <div id="hours-block">
+            <h3>Opening Hours</h3>
+            <p>{{ restaurant.timeOpens|time:"G:i"}} - {{ restaurant.timeCloses|time:"G:i" }}</p>
+        </div>
+
+        <div id="tags-block">
+            <h3>Tags</h3>
+            <p>{{ restaurant.tags }}</p>
+        </div>
+
+        <div id="cuisine-type-block">
+            <h3>Cuisine Type</h3>
+            {% if restaurant.cuisineType %}
+                <p>{{ restaurant.cuisineType }}</p>
+            {% else %}
+                <p>No cuisine type available.</p>
+            {% endif %}
+        </div>
+
+        <div id="menu-block">
+            <h3>Menu</h3>
+            {% if dishes %}
+            <ul>
+            {% for dish in dishes %}
+            <li>{{ dish.name }} - £{{ dish.price }}</li>
+            {% endfor %}
+            </ul>
+            {% else %}
+            <strong>No menu available.</strong>
+            {% endif %}
+        </div>
+
+        <!-- This should only be visible to the restaurant's manager, add later. -->
+        <a href="{% url 'food_advisor:manage_restaurant' restaurant.id %}">Manage Restaurant Info</a>
+
+    {% else %}
+        The specified restaurant does not exist.
+    {% endif %}
+{% endblock content %}
