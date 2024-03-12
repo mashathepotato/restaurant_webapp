@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 from .forms import ManagerRegistrationForm, UserForm, UserProfileForm, RestaurantForm, ManagerForm
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
+from django.http import HttpResponse
 def index(request):
     restaurants = Restaurant.objects.all()  # Get all restaurants
     return render(request, 'food_advisor/index.html', {'restaurants': restaurants})
@@ -28,7 +29,7 @@ def register_user(request):
             profile.save()
             registered = True
             login(request, user)
-            return redirect('foodAdvidor: index')
+            return redirect('food_advisor:index')
         else:
             print(user_form.errors, profile_form.errors)
     else:
@@ -63,7 +64,7 @@ def register_manager(request):
         manager_form = ManagerForm()
         restaurant_form = RestaurantForm()
 
-    return render(request, 'foodAdvisor/register_manager.html',
+    return render(request, 'food_advisor/register_manager.html',
                   context = {'user_form': manager_form,
                              'profile_form': restaurant_form,
                              'registered': registered})
@@ -78,7 +79,7 @@ def user_login(request):
             # Is the account active? It could have been disabled.
             if user.is_active:
                 login(request, user)
-                return redirect(reverse('foodAdvisor:index'))
+                return redirect(reverse('food_advisor:index'))
             else:
                 return HttpResponse("Your foodAdvisor account is disabled.")
         else:
