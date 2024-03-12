@@ -9,4 +9,5 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('food_advisor/', include('food_advisor.urls')),
     path('admin/', admin.site.urls),
+    path('nothing/', views.nothing, name='nothing'),
 ]   + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
