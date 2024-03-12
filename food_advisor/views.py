@@ -168,7 +168,25 @@ def show_restaurant(request, restaurant_id_slug):
     return render(request, 'food_advisor/show_restaurant.html', context=context_dict)
 
 def show_restaurant_reviews(request, restaurant_id_slug):
-    return redirect('rango:index')
+    context_dict = {}
+
+    try:
+        # Get restaurant from id, if not exists, throw error.
+        restaurant = Restaurant.objects.get(id=restaurant_id_slug)
+
+        # Retrieve all reviews from restaurant.
+        reviews = Review.objects.filter(restaurant=restaurant)
+
+        context_dict['reviews'] = reviews
+        context_dict['restaurant'] = restaurant
+
+    except Restaurant.DoesNotExist:
+        # If don't find restaurant, do nothing.
+        context_dict['restaurant'] = None
+        context_dict['reviews'] = None
+
+    # Render response and return it to the client
+    return render(request, 'food_advisor/show_restaurant_reviews.html', context=context_dict)
 
 def manage_restaurant(request, restaurant_id_slug):
     try:
