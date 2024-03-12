@@ -69,7 +69,7 @@ def register(request):
     # Render the template depending on the context.
     return render(request, 'rango/register.html', context={'user_form': user_form, 'profile_form': profile_form, 'registered': registered})
 
-def user_login(request):
+def user_signin(request):
     # If the request is a HTTP POST, try to pull out the relevant information.
     if request.method == 'POST':
         # Gather the username and password provided by the user.
@@ -93,7 +93,7 @@ def user_login(request):
                 # If the account is valid and active, we can log the user in.
                 # We'll send the user back to the homepage.
                 login(request, user)
-                return redirect(reverse('rango:index'))
+                return redirect(reverse('food_advisor:index'))
             else:
                 # An inactive account was used - no logging in!
                 return HttpResponse("Your Rango account is disabled.")
@@ -106,8 +106,30 @@ def user_login(request):
     else:
         # No context variables to pass to the template system, hence the
         # blank dictionary object...
-        return render(request, 'rango/login.html')
+        return render(request, 'food_advisor/login.html')
 
+def registerUser(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('food_advisor:index')
+    else:
+        form = UserCreationForm()
+    return render(request, 'food_advisor/register.html', {'form': form})
+
+def registerOwner(request):
+    if request.method == 'POST':
+        form = ManagerRegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('food_advisor:index')
+    else:
+        form = ManagerRegistrationForm()
+    return render(request, 'food_advisor/owner.html', {'form': form})
+
+def nothing(request):
+    return render(request, 'nothing.html')
 #@login_required
 #def restricted(request):
 #    return render(request, 'rango/restricted.html')
