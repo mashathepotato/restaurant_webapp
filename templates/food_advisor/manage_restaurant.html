@@ -18,13 +18,11 @@
                             {{ field.errors }}
                             {% if field.name == 'cuisineTypes' %}
                                 <select name="{{ field.name }}" class="form-control" id="{{ field.id_for_label }}">
-                                    <option value="" {% if not field.value %}selected{% endif %}>请选择餐厅类型</option>
+                                    <option value="" {% if not field.value %}selected{% endif %}>None</option>
+                                    <option value="coffee" {% if 'coffee' in field.value %}selected{% endif %}>Coffee</option>
                                     <option value="chinese" {% if 'chinese' in field.value %}selected{% endif %}>Chinese</option>
-                                    <option value="indian" {% if 'indian' in field.value %}selected{% endif %}>Indian</option>
-                                    <option value="italian" {% if 'italian' in field.value %}selected{% endif %}>Italian</option>
-                                    <option value="japanese" {% if 'japanese' in field.value %}selected{% endif %}>Japanese</option>
                                     <option value="mexican" {% if 'mexican' in field.value %}selected{% endif %}>Mexican</option>
-                                    <option value="thai" {% if 'thai' in field.value %}selected{% endif %}>Thai</option>
+                                    <option value="italian" {% if 'italian' in field.value %}selected{% endif %}>Italian</option>
                                     {% for value, display_text in field.field.choices %}
                                         {% if value != 'chinese' %}
                                             <option value="{{ value }}" {% if field.value == value %}selected{% endif %}>{{ display_text }}</option>
@@ -35,7 +33,7 @@
                                 <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" class="form-control" id="{{ field.id_for_label }}" {% if field.field.required %}required{% endif %}>
                             {% endif %}
                             <div class="invalid-feedback">
-                                请提供有效的 {{ field.name }}。
+                                Please provide a valid {{ field.name }}。
                             </div>
                         </div>
                     {% endfor %}
@@ -45,7 +43,7 @@
         </div>
     {% else %}
         <div class="alert alert-danger" role="alert">
-            指定的餐厅不存在。
+            Restaurant does not exist.
         </div>
     {% endif %}
 {% endblock content %}
