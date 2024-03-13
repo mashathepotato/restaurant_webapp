@@ -4,10 +4,15 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE',
 
 import django
 django.setup()
-from food_advisor.models import User, Restaurant, Review, Dish, UserProfile
+from food_advisor.models import User, Restaurant, Review, Dish, UserProfile, CuisineType
 import datetime
 
 def populate():
+    cuisine_types = ['Indian','Chinese','Italian','French','British']
+    for type in cuisine_types:
+        c = CuisineType.objects.get_or_create(name=type)[0]
+        c.name=type
+        c.save()
 
     ihop_dishes = [
         {'name':'Pancake stack','price':6.5},
@@ -63,7 +68,8 @@ def populate():
             'open':datetime.time(7,0),
             'close':datetime.time(0,0),
             'starRating':4.23,
-            'totalReviews':23,}],
+            'totalReviews':23,
+            'cuisineTypes':['British'],}],
 
         [{'username':'SubwayManager',
             'email':'subway@manager.com',
@@ -76,7 +82,8 @@ def populate():
             'open':datetime.time(7,0),
             'close':datetime.time(19,0),
             'starRating':4.23,
-            'totalReviews':23,}],
+            'totalReviews':23,
+            'cuisineTypes':['British'],}],
 
         [{'username':'GreggsManager',
             'email':'greggs@manager.com',
@@ -89,7 +96,8 @@ def populate():
             'open':datetime.time(5,0),
             'close':datetime.time(21,0),
             'starRating':4.23,
-            'totalReviews':23,}]
+            'totalReviews':23,
+            'cuisineTypes':['British'],}]
     ]
 
     for user in users:
@@ -102,8 +110,15 @@ def populate():
         r = add_restaurant(rest_data['name'], rest_data['address'], manager_user, rest_data['starRating'], rest_data['totalReviews'])
         for d in rest_data['dishes']:
             add_dishes(r, d['name'], d['price'])
+        for c in rest_data['cuisineTypes']:
+            add_cuisineType(r, c)
         for s in rest_data['reviews']:
             add_review(r, s['username'], s['content'], s['stars'])
+
+def add_cuisineType(rest, name):
+    type = CuisineType.objects.get(name=name)
+    type.save()
+    rest.cuisineTypes.add(type)
 
 def add_review(rest, username, content, stars):
     user = User.objects.get(username=username)
@@ -130,6 +145,7 @@ def add_restaurant(name, address, manager, starRating=1.0, totalReviews=0):
     r.manager=manager
     r.starRating=starRating
     r.totalReviews=totalReviews
+    r.tags = "Tag1, Tag2"
     r.save()
     return r
     

@@ -8,16 +8,21 @@
         <div>
             <ul class="navbar-nav">
 
+                {% if user.is_authenticated == False %}
                 <li class="nav-item">
                     <a class="nav-link" href="/food_advisor/signin">Login</a>
                 </li>
+                {% endif %}
+                {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="/nothing">Logout</a>
+                    <a class="nav-link" href="/food_advisor/signout">Logout</a>
                 </li>
+                {% endif %}
+                {% if user.is_authenticated == False %}
                 <li class="nav-item">
                     <a class="nav-link" href="/food_advisor/owner">Restaurant Owners</a>
                 </li>
-
+                {% endif %}
             </ul>
         </div>
     </div>

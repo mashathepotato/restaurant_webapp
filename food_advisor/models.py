@@ -32,7 +32,7 @@ class Restaurant(models.Model):
     address = models.CharField(max_length=128)
     timeOpens = models.TimeField(default='12:00:00')
     timeCloses = models.TimeField(default='12:00:00')
-    tags = models.CharField(max_length=128, null=True, blank=True)
+    tags = models.CharField(max_length=128, blank=True, default="")
     cuisineTypes = models.ManyToManyField(CuisineType, blank=True)
     name = models.CharField(max_length=128)
     starRating = models.DecimalField(decimal_places=4, max_digits=10, default=0)
@@ -45,6 +45,15 @@ class Restaurant(models.Model):
     def getIntegerStars(self):
         # Rounds average stars to integer for displaying star images.
         return int(round(self.starRating))
+    
+    def getTags(self):
+        return self.tags.split(",")
+    
+    def getCuisines(self):
+        list = []
+        for type in self.cuisineTypes.all():
+            list.append(str(type.name))
+        return list
 
 class Review(models.Model):
     id = models.AutoField(primary_key=True)

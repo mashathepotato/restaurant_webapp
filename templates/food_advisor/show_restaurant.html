@@ -47,18 +47,20 @@
             <h3>Tags</h3>
             <!-- Assume tags is a list, display as badges -->
             <p>
-                {% for tag in restaurant.tags.all %}
-                    <span class="badge badge-secondary">{{ tag.name }}</span>
+                {% for tag in restaurant.getTags %}
+                    <span class="badge badge-secondary">{{ tag }}</span>
                 {% endfor %}
             </p>
         </div>
 
         <div id="cuisine-type-block" class="mb-3">
             <h3>Cuisine Type</h3>
-            {% if restaurant.cuisineType %}
-                <p>{{ restaurant.cuisineType }}</p>
+            {% if restaurant.cuisineTypes %}
+                {% for type in restaurant.getCuisines %}
+                    <span class="badge badge-secondary">{{ type }}</span>
+                {% endfor %}
             {% else %}
-                <p>No cuisine type available.</p>
+                <p>No cuisine types available</p>
             {% endif %}
         </div>
 
