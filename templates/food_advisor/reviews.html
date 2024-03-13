@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+    
+{% block title %}
+    {% if Restaurant %}
+        {{ restaurant.name}}
+    {% else %}
+        {{ Unknown Restaurant }}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">    
+    <h1>Reviews</h1>
+    {% if reviews %} 
+        {% for r in reviews %}
+        <div>
+            <p> User: {{ r.user }}</p>
+            <p><strong>{{ r.content }}</strong></p>
+            <p>Date: {{ reviews.date }}</p>
+            <p>Star Rating: {{ r.starRating }}</p>
+            {% if r.replyContent %}
+                <p>Reply: <strong>{{ r.replyContent }}</strong></p>
+            {% endif %}
+        </div>
+    {% endfor %}
+    {% else %}
+        This restaurant has no reviews yet. Be the first!
+    {% endif %}
+</div>
+{% endblock %}
