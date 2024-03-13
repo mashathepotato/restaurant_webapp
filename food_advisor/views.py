@@ -1,11 +1,12 @@
-from .models import Restaurant, Review, User 
-from django.contrib.auth.forms import UserCreationForm  
+from .models import Restaurant 
+from django.contrib.auth.forms import AuthenticationForm  
 from django.contrib.auth import login, authenticate  
 from django.shortcuts import render, redirect
-from .forms import ManagerRegistrationForm, UserForm, UserProfileForm, RestaurantForm, ManagerForm
-from django.shortcuts import render, get_object_or_404
+from .forms import ManagerRegistrationForm, UserForm, UserProfileForm, ManagerRegistrationForm, RestaurantEditForm
+from django.shortcuts import render
 from django.urls import reverse
-from django.http import HttpResponse
+from django.contrib import messages
+
 def index(request):
     restaurants = Restaurant.objects.all()  # Get all restaurants
     return render(request, 'food_advisor/index.html', {'restaurants': restaurants})
@@ -19,8 +20,6 @@ def register_user(request):
 
         if user_form.is_valid() and profile_form.is_valid(): # Save the user's form data to the database. 
             user = user_form.save()
-            user.set_password(user.password)
-            user.save()
             profile = profile_form.save(commit=False)
             profile.user = user
             if 'picture' in request.FILES:
@@ -29,6 +28,8 @@ def register_user(request):
             profile.save()
             registered = True
             login(request, user)
+
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('food_advisor:index')
         else:
             print(user_form.errors, profile_form.errors)
@@ -44,25 +45,22 @@ def register_user(request):
 def register_manager(request):
     registered = False
     if request.method == 'POST':
-        manager_form = UserForm(request.POST)
-        restaurant_form = RestaurantForm(request.POST)
+        manager_form = ManagerRegistrationForm(request.POST)
+        restaurant_form = RestaurantEditForm(request.POST, request.FILES)
 
         if manager_form.is_valid() and restaurant_form.is_valid(): # Save the user's form data to the database. 
             manager = manager_form.save()
-            manager.set_password(manager.password)
-            manager.save()
             restaurant = restaurant_form.save(commit=False)
-            restaurant.user = manager
-            if 'picture' in request.FILES:
-                restaurant.picture = request.FILES['picture']
-            
+            restaurant.manager = manager
             restaurant.save()
             registered = True
+
+            login(request, manager)
         else:
             print(manager_form.errors, restaurant_form.errors)
     else:
-        manager_form = ManagerForm()
-        restaurant_form = RestaurantForm()
+        manager_form = ManagerRegistrationForm()
+        restaurant_form = RestaurantEditForm()
 
     return render(request, 'food_advisor/register_manager.html',
                   context = {'user_form': manager_form,
@@ -71,23 +69,26 @@ def register_manager(request):
 
 def user_login(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        form = AuthenticationForm(request, data=request, data=request.POST)
+        if form.is_valid:
 
-        user = authenticate(username=username, password=password)
-        if user:
-            # Is the account active? It could have been disabled.
-            if user.is_active:
-                login(request, user)
-                return redirect(reverse('food_advisor:index'))
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user:
+                if user.is_active:
+                    login(request, user)
+                    return redirect(reverse('food_advisor:index'))
+                else:
+                    messages(request, "Your foodAdvisor account is disabled.")
             else:
-                return HttpResponse("Your foodAdvisor account is disabled.")
+                messages.error(request, "Invalid login details.")
         else:
-            print(f"Invalid login details: {username}, {password}")
-            return HttpResponse("Invalid login details supplied.")
+            messages.error(request, form.errors)
     else:
-# No context variables to pass to the template system, hence the # blank dictionary object...
-        return render(request, 'foodAdvisor/login.html')
+        form = AuthenticationForm()
+                                                # No context variables to pass to the template system, hence the # blank dictionary object...
+    return render(request, 'foodAdvisor/login.html', {'form': form})
 
 #@login_required
 #def restricted(request):
