@@ -54,7 +54,6 @@ class Review(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     replyContent = models.CharField(max_length=128, default='')
     starRating = models.IntegerField(choices = STAR_CHOICES, default=0)
-    
     def __str__(self):
         return str(self.id)
 

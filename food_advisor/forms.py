@@ -24,10 +24,10 @@ class RestaurantEditForm(forms.ModelForm):
     timeOpens = forms.TimeField(help_text="Opening Time:")
     timeCloses = forms.TimeField(help_text="Closing Time:")
     tags = forms.CharField(max_length=128, help_text="Tags:")
-    cuisineTypes = forms.ModelMultipleChoiceField(CuisineType.objects.all(),
+    cuisineTypes = forms.ModelMultipleChoiceField(queryset=CuisineType.objects.all(),
                                                   label="Cuisine Type",
                                                   widget=forms.CheckboxSelectMultiple,
-                                                  help_text="Cuisine Type:")
+                                                  help_text="Cuisine Type:",)
     image = forms.ImageField(help_text="Cover Image:")
 
     # An inline class to provide additional information on the form
