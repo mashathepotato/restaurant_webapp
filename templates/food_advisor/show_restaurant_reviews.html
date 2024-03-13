@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Reviews for {{ restaurant.name }}
+{% endblock title %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>Reviews for {{ restaurant.name }}</h2>
+        {% if reviews %}
+            <div class="row">
+                {% for review in reviews %}
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ review.title }}</h5>
+                                <p class="card-text">{{ review.content }}</p>
+                                <p class="card-text">Rating: {{ review.starRating }}</p>
+                                <p class="card-text">User: {{ review.user }}</p>
+                                <p class="card-text">Posted at: {{ review.date }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No reviews available for this restaurant.</p>
+        {% endif %}
+    </div>
+{% endblock content %}

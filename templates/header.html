@@ -1,0 +1,43 @@
+<!-- Define navigation bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <!-- Navigation bar trademark -->
+        <a class="navbar-brand" href="/">FoodAdvisor</a>
+
+        <!-- Navigation entrance -->
+        <div>
+            <ul class="navbar-nav">
+
+                {% if user.is_authenticated == False %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/food_advisor/signin">Login</a>
+                </li>
+                {% endif %}
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/food_advisor/signout">Logout</a>
+                </li>
+                {% endif %}
+                {% if user.is_authenticated == False %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/food_advisor/owner">Restaurant Owners</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+    <script>
+        function user_delete() {
+            layer.open({
+                title: "Confirm deletion",
+                content: "Are you sure you want to delete user information?",
+                yes: function(index, layero) {
+                    $('form#user_delete button').click();
+                    layer.close(index);
+                },
+            })
+        }
+    </script>

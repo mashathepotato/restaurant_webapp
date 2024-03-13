@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Home Page
+{% endblock title %}
+
+{% block content %}
+<div class="container my-5">
+
+    <!-- Search Bar -->
+    <div class="row mb-4">
+        <div class="col-md-8 col-lg-6 mx-auto">
+            <form class="form-inline d-flex justify-content-center">
+                <input class="form-control mr-sm-2 w-75" type="search" placeholder="Search" aria-label="Search" name="search" required>
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Search Results Message -->
+    {% if search %}
+        <div class="text-center">
+            {% if articles %}
+                <h4>Results for "<span class="text-danger">{{ search }}</span>":</h4>
+            {% else %}
+                <h4>No results found for "<span class="text-danger">{{ search }}</span>".</h4>
+            {% endif %}
+            <hr>
+        </div>
+    {% endif %}
+
+    <!-- Filter Dropdown -->
+    <div class="row mb-4">
+        <div class="col-md-8 col-lg-6 mx-auto">
+            <select id="selectLeo" class="form-control" onchange="showSelectedValue()">
+                <option value="-1" disabled selected>Filter by Cuisine</option>
+                <option value="0">Coffee</option>
+                <option value="1">Chinese</option>
+                <option value="2">Mexican</option>
+                <option value="3">Italian</option>
+                <option value="4">Clear Filters</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Image Gallery Grid -->
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for i in articles %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="{{ i.avatar.url }}" class="card-img-top" alt="{{ i.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ i.title }}</h5>
+                        <p class="card-text">{{ i.body|slice:'100' }}...</p>
+                    </div>
+                    <div class="card-footer bg-white border-top-0">
+                        <div class="tags">
+                            {% for tag in i.tags.all %}
+                                <span class="badge badge-info">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <!-- Columns for static images when there are no articles -->
+            <div class="col">
+                <img src="{% static 'images/1.jpg' %}" alt="Restaurant Image 1" class="img-fluid" style="margin-bottom: 20px;">
+            </div>
+            <div class="col">
+                <img src="{% static 'images/1.jpg' %}" alt="Restaurant Image 2" class="img-fluid" style="margin-bottom: 20px;">
+            </div>
+            <div class="col">
+                <img src="{% static 'images/1.jpg' %}" alt="Restaurant Image 3" class="img-fluid" style="margin-bottom: 20px;">
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function showSelectedValue(){
+            var foodType = document.getElementById("selectLeo");
+            var selectedText = foodType.options[foodType.selectedIndex].text;
+            var newUrl = "{% url 'index' %}?search=" + selectedText;
+
+            window.location.href = newUrl;
+        }
+    </script>
+
+</div>
+{% endblock content %}
