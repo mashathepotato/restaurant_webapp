@@ -37,6 +37,7 @@
             <h3>Address</h3>
             <p>{{ restaurant.address }}</p>
         </div>
+        <div id="map" style="height: 400px;"></div>
 
         <div id="hours-block" class="mb-3">
             <h3>Opening Hours</h3>
@@ -91,4 +92,31 @@
         </div>
     {% endif %}
 </div>
+
+<script>
+    function initMap() {
+        var geocoder = new google.maps.Geocoder();
+        var address = '{{ restaurant.address }}';
+
+        geocoder.geocode({ 'address': address }, function(results, status) {
+            if (status === 'OK') {
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 15,
+                    center: results[0].geometry.location
+                });
+
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: results[0].geometry.location,
+                    title: '{{ restaurant.name }}'
+                });
+            } else {
+                console.error('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+    }
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap" async defer></script>
+
 {% endblock content %}

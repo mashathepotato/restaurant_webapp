@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Restaurant, Review, User, Dish
@@ -136,11 +137,13 @@ def show_restaurant(request, restaurant_id_slug):
 
         context_dict['dishes'] = dishes
         context_dict['restaurant'] = restaurant
+        context_dict['google_maps_api_key'] = settings.GOOGLE_MAPS_API_KEY
 
     except Restaurant.DoesNotExist:
         # If don't find restaurant, do nothing.
         context_dict['restaurant'] = None
         context_dict['dishes'] = None
+        context_dict['google_maps_api_key'] = None
 
     # Render response and return it to the client
     return render(request, 'food_advisor/show_restaurant.html', context=context_dict)
