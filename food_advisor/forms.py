@@ -7,6 +7,8 @@ from .models import UserProfile
 
 from food_advisor.models import CuisineType, Restaurant
 
+from food_advisor.models import CuisineType, Restaurant
+
 User = get_user_model()
 
 

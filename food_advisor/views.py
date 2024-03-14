@@ -1,3 +1,5 @@
+import json
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Restaurant, Review, User, Dish
@@ -8,6 +10,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from .forms import ManagerRegistrationForm, UserForm, UserProfileForm, ManagerRegistrationForm, RestaurantEditForm
+from django.contrib.auth.forms import UserCreationForm  
 from django.shortcuts import render, get_object_or_404
 
 def index(request):
@@ -107,6 +110,28 @@ def user_logout(request):
     logout(request)
     return redirect(reverse('food_advisor:index'))
 
+def registerUser(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('food_advisor:index')
+    else:
+        form = UserCreationForm()
+    return render(request, 'food_advisor/register.html', {'form': form})
+
+def registerOwner(request):
+    if request.method == 'POST':
+        form = ManagerRegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('food_advisor:index')
+    else:
+        form = ManagerRegistrationForm()
+    return render(request, 'food_advisor/owner.html', {'form': form})
+
+def nothing(request):
+    return render(request, 'nothing.html')
 #@login_required
 #def restricted(request):
 #    return render(request, 'rango/restricted.html')
@@ -122,7 +147,6 @@ def user_logout(request):
   #  if not val:
    #     val = default_val
 #return val
-
     
 def show_restaurant(request, restaurant_id_slug):
     context_dict = {}
@@ -192,3 +216,27 @@ def manage_restaurant(request, restaurant_id_slug):
 #def manage_restaurant(request, restaurant_id_slug):
     # placeholder view logic for managing a restaurant
  #   return render(request, 'food_advisor/manage_restaurant.html', {})
+
+def add_dish_ajax(request, restaurant_id_slug):
+    if request.is_ajax() and request.method == "POST":
+        form = DishForm(request.POST)
+        if form.is_valid():
+            dish = form.save(commit=False)
+            dish.restaurant_id = restaurant_id_slug
+            dish.save()
+            return JsonResponse({"id": dish.id, "name": dish.name, "price": dish.price}, status=200)
+        else:
+            return JsonResponse({"error": form.errors}, status=400)
+    return JsonResponse({"error": "Not an AJAX request"}, status=400)
+
+
+def delete_dish_ajax(request, dish_id):
+    if request.is_ajax() and request.method == "DELETE":
+        try:
+            dish = Dish.objects.get(id=dish_id, restaurant__manager__user=request.user)
+            dish.delete()
+            return JsonResponse({"message": "Dish deleted successfully"}, status=200)
+        except Dish.DoesNotExist:
+            return JsonResponse({"error": "Dish not found"}, status=404)
+    return JsonResponse({"error": "Not an AJAX request"}, status=400)
+

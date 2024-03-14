@@ -55,12 +55,12 @@
 
         <div id="cuisine-type-block" class="mb-3">
             <h3>Cuisine Type</h3>
-            {% if restaurant.cuisineTypes %}
-                {% for type in restaurant.getCuisines %}
-                    <span class="badge badge-secondary">{{ type }}</span>
+            {% if restaurant.cuisineTypes.all %}
+                {% for cuisine in restaurant.cuisineTypes.all %}
+                    <p>{{ cuisine.name }}</p>
                 {% endfor %}
             {% else %}
-                <p>No cuisine types available</p>
+                <p>No cuisine type available.</p>
             {% endif %}
         </div>
 
@@ -69,9 +69,13 @@
             {% if dishes %}
                 <ul class="list-group">
                     {% for dish in dishes %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <li class="list-group-item d-flex justify-content-between align-items-center" id="dish-{{ dish.id }}">
                             {{ dish.name }}
-                            <span class="badge badge-primary badge-pill">£{{ dish.price }}</span>
+                            <span>
+                                <span class="badge badge-primary badge-pill">£{{ dish.price }}</span>
+                                <!-- Use a data attribute for the dish ID -->
+                                <button data-dish-id="{{ dish.id }}" class="btn btn-danger btn-sm delete-dish-button">Delete</button>
+                            </span>
                         </li>
                     {% endfor %}
                 </ul>
@@ -92,3 +96,7 @@
     {% endif %}
 </div>
 {% endblock content %}
+
+{% block javascript %}
+    <script src="{% static 'js/dish_script.js' %}"></script>
+{% endblock %}
