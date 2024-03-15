@@ -1,59 +1,63 @@
 <!DOCTYPE html>
+<html lang="en">
 {% load static %}
-
-<html lang="zh-cn">
-
 <head>
-    <meta charset="utf-8">
-    <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'md_css/monokai.css' %}">
-
-    <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
-    >
+<title>{% block title %}Your Website Name{% endblock %}</title>
+<meta charset="utf-8">
+<!--css-->
+<link rel="stylesheet" href="{% static 'css/reset.css' %}" type="text/css" media="screen">
+<link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css" media="screen">
+<link rel="stylesheet" href="{% static 'css/grid.css' %}" type="text/css" media="screen">
+<link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+<link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon" />
+<link href='http://fonts.googleapis.com/css?family=PT+Serif+Caption:400,400italic' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="{% static 'css/flexslider.css' %}" type="text/css" media="screen">
+<!--js-->
+<script type="text/javascript" src="{% static 'js/jquery-1.7.1.min.js' %}" ></script>
+<script type="text/javascript" src="{% static 'js/superfish.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jquery.flexslider-min.js' %}"></script>
+{% block extra_head %}{% endblock %}
 </head>
-
 <body>
 
-{% include 'header.html' %}
-<div id="wrapper">
-    {% block content %}{% endblock content %}
-    <div id="push"></div>
-</div>
-{% include 'footer.html' %}
+<!--==============================header=================================-->
+<header>
+  <div class="line-top"></div>
+  <div class="main">
+    <div class="row-top">
+      <h1><a href="index.html"><img alt="" src="{% static 'images/logo.png' %}"></a></h1>
+      <nav>
+        <ul class="sf-menu">
+          {% block navigation %}
+          <li class="active"><a href="index.html">Home</a></li>
+          <li><a href="index-1.html">Courses </a> </li>
+          <li><a href="index-2.html">Recipes</a></li>
+          <li><a href="index-3.html">Calendar</a> </li>
+          <li><a href="index-4.html">Chefs</a> </li>
+          <li><a href="index-5.html">Contacts</a> </li>
+          {% endblock %}
+        </ul>
+      </nav>
+      <div class="clear"></div>
+    </div>
+  </div>
+</header>
 
-<script src="{% static 'jquery/jquery-3.3.1.js' %}"></script>
+{% block content %}{% endblock %}
 
-{#<script src="{% static 'popper/popper-1.14.4.js' %}"></script>#}
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1-lts/dist/umd/popper.min.js"></script>
-
-<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
-<script src="{% static 'layer/layer.js' %}"></script>
-
-{% block script %}{% endblock script %}
-
-
-
-
-<style>
-    html, body {
-        height: 100%;
-        margin: 0;
-    }
-
-    #wrapper {
-        min-height: 100%;
-        margin-bottom: -40px;
-    }
-
-    #footer,
-    #push {
-        height: 60px;
-    }
-</style>
+<!--==============================footer=================================-->
+<footer>
+  <div class="main">
+    <ul class="soc-list">
+      <li><a href="#"><img alt="" src="{% static 'images/icon-1.png' %}"></a></li>
+      <li><a href="#"><img alt="" src="{% static 'images/icon-2.png' %}"></a></li>
+      <li><a href="#"><img alt="" src="{% static 'images/icon-3.png' %}"></a></li>
+      <li><a href="#"><img alt="" src="{% static 'images/icon-4.png' %}"></a></li>
+    </ul>
+    <div class="policy">Professional free website templates <a href="http://www.moobnn.com" target="_blank">at www.moobnn.com</a>.<br>Website Template Collet from <a href="http://www.moobnn.com" >www.moobnn.com</a> </div>
+    <div class="clear"></div>
+  </div>
+</footer>
 
 </body>
-
 </html>
