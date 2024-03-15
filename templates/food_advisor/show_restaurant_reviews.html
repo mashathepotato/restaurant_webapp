@@ -14,9 +14,13 @@
                     <div class="col-md-6">
                         <div class="card mb-3">
                             <div class="card-body">
-                                <h5 class="card-title">{{ review.title }}</h5>
+                                {% with ''|center:review.starRating as range %}
+                                {% for _ in range %}
+                                    <img src="{% static 'images/star.png' %}" class="img-fluid" style="height: 25px;">
+                                {% endfor %}
+                                {% endwith %}
+                                <br /><br />
                                 <p class="card-text">{{ review.content }}</p>
-                                <p class="card-text">Rating: {{ review.starRating }}</p>
                                 <p class="card-text">User: {{ review.user }}</p>
                                 <p class="card-text">Posted at: {{ review.date }}</p>
                             </div>
