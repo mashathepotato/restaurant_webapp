@@ -9,14 +9,42 @@
 <div class="container my-5">
 
     <!-- Search Bar -->
-    <div class="row mb-4">
-        <div class="col-md-8 col-lg-6 mx-auto">
-            <form class="form-inline d-flex justify-content-center">
-                <input class="form-control mr-sm-2 w-75" type="search" placeholder="Search" aria-label="Search" name="search" required>
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
-        </div>
-    </div>
+        <!-- Full-width Header with Background Image -->
+        <div class="container my-5">
+            <!-- Full-width Header with Background Image -->
+            <div class="container my-5">
+                <!-- Full-width Header with Background Image -->
+                <div class="header-image" style="background: url('{% static 'images/search_back.png' %}') no-repeat center center; background-size: cover;">
+                    <div class="overlay" style="background: rgba(0, 0, 0, 0.5); padding: 60px 0;">
+                        <!-- Search Bar and Filter Dropdown -->
+                        <div class="row">
+                            <div class="col-md-10 col-lg-8 mx-auto text-center">
+                                <form class="d-flex flex-column align-items-center w-100">
+                                    
+                                    <!-- Search Input and Button in-line -->
+                                    <div class="d-flex w-100 mb-2">
+                                        <input class="form-control flex-grow-1" type="search" placeholder="Search by restaurant name or restaurant type" aria-label="Search" name="search" required>
+                                        <button class="btn btn-outline-success ml-2" type="submit">Search</button>
+                                    </div>
+            
+                                    <!-- Filter Dropdown -->
+                                    <div class="form-group w-100 mb-3">
+                                        <select id="selectLeo" class="form-control" onchange="showSelectedValue()" style="width: 200px; margin: auto;">
+                                            <option value="-1" disabled selected>Filter by Cuisine</option>
+                                            <option value="0">Coffee</option>
+                                            <option value="1">Chinese</option>
+                                            <option value="2">Mexican</option>
+                                            <option value="3">Italian</option>
+                                            <option value="4">Clear Filters</option>
+                                        </select>
+                                    </div>
+            
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
     <!-- Search Results Message -->
     {% if search %}
@@ -29,20 +57,6 @@
             <hr>
         </div>
     {% endif %}
-
-    <!-- Filter Dropdown -->
-    <div class="row mb-4">
-        <div class="col-md-8 col-lg-6 mx-auto">
-            <select id="selectLeo" class="form-control" onchange="showSelectedValue()">
-                <option value="-1" disabled selected>Filter by Cuisine</option>
-                <option value="0">Coffee</option>
-                <option value="1">Chinese</option>
-                <option value="2">Mexican</option>
-                <option value="3">Italian</option>
-                <option value="4">Clear Filters</option>
-            </select>
-        </div>
-    </div>
 
     <!-- Image Gallery Grid -->
     <div class="row row-cols-1 row-cols-md-3 g-4">
