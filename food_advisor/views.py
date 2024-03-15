@@ -169,13 +169,14 @@ def show_restaurant_reviews(request, restaurant_id_slug):
     # Render response and return it to the client
     return render(request, 'food_advisor/show_restaurant_reviews.html', context=context_dict)
 
+@login_required
 def manage_restaurant(request, restaurant_id_slug):
     try:
         restaurant = Restaurant.objects.get(id=restaurant_id_slug)
     except Restaurant.DoesNotExist:
         restaurant = None
 
-    if restaurant is None:
+    if restaurant is None or (restaurant.manager.user != request.user):
         return redirect('/food_advisor/')
     
     form = RestaurantEditForm(instance=restaurant)
