@@ -12,7 +12,10 @@ from .forms import ManagerRegistrationForm, UserForm, UserProfileForm, ManagerRe
 from django.shortcuts import render, get_object_or_404
 
 def index(request):
-    restaurants = Restaurant.objects.all()  # Get all restaurants
+    restaurants = Restaurant.objects.all()
+    for restaurant in restaurants:
+        restaurant.full_stars = range(restaurant.getIntegerStars())
+        restaurant.empty_stars = range(5 - restaurant.getIntegerStars())
     return render(request, 'food_advisor/index.html', {'restaurants': restaurants})
 
 

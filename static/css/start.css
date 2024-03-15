@@ -1,0 +1,8 @@
+<style>
+    .restaurant-rating .fa-star {
+        color: #ccc; /* 默认星星的颜色 */
+    }
+    .restaurant-rating .checked {
+        color: #ffc107; /* 选中星星的颜色 */
+    }
+</style>

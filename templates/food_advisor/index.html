@@ -21,7 +21,7 @@
     <!-- Search Results Message -->
     {% if search %}
         <div class="text-center">
-            {% if articles %}
+            {% if restaurants %}
                 <h4>Results for "<span class="text-danger">{{ search }}</span>":</h4>
             {% else %}
                 <h4>No results found for "<span class="text-danger">{{ search }}</span>".</h4>
@@ -46,13 +46,29 @@
 
     <!-- Image Gallery Grid -->
     <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for i in articles %}
+        {% for i in restaurants %}
             <div class="col">
                 <div class="card h-100 shadow-sm">
-                    <img src="{{ i.avatar.url }}" class="card-img-top" alt="{{ i.title }}">
+                    <a href="{% url 'food_advisor:show_restaurant' restaurant_id_slug=i.id %}">
+                        {% if i.image %}
+                            <img src="{{ i.image.url }}" class="card-img-top" alt="{{ i.name }}">
+                        {% else %}
+                            <img src="{% static 'images/default.jpg' %}" class="card-img-top" alt="{{ i.name }}">
+                        {% endif %}
+                    </a>
                     <div class="card-body">
-                        <h5 class="card-title">{{ i.title }}</h5>
+                        <!-- 插入餐厅名称 -->
+                        <h5 class="card-title">{{ i.name }}</h5>
                         <p class="card-text">{{ i.body|slice:'100' }}...</p>
+                    </div>
+                    <!-- 星级评分 -->
+                    <div class="star-rating">
+                        {% for star in i.full_stars %}
+                            <span class="fas fa-star"></span> <!-- full stars -->
+                        {% endfor %}
+                        {% for star in i.empty_stars %}
+                            <span class="far fa-star"></span> <!-- empty stars -->
+                        {% endfor %}
                     </div>
                     <div class="card-footer bg-white border-top-0">
                         <div class="tags">
@@ -64,17 +80,8 @@
                 </div>
             </div>
         {% empty %}
-            <!-- Columns for static images when there are no articles -->
-            <div class="col">
-                <img src="{% static 'images/1.jpg' %}" alt="Restaurant Image 1" class="img-fluid" style="margin-bottom: 20px;">
-            </div>
-            <div class="col">
-                <img src="{% static 'images/1.jpg' %}" alt="Restaurant Image 2" class="img-fluid" style="margin-bottom: 20px;">
-            </div>
-            <div class="col">
-                <img src="{% static 'images/1.jpg' %}" alt="Restaurant Image 3" class="img-fluid" style="margin-bottom: 20px;">
-            </div>
         {% endfor %}
+
     </div>
 
     <script>
