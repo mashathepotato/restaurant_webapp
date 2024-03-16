@@ -1,8 +1,9 @@
 import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE',
                       'restaurant_webapp.settings')
-
+BASE_DIR = (os.path.dirname(os.path.abspath(__file__)))
 import django
+from django.core.files import File
 django.setup()
 from food_advisor.models import User, Restaurant, Review, Dish, UserProfile, CuisineType
 import datetime
@@ -69,7 +70,8 @@ def populate():
             'close':datetime.time(0,0),
             'starRating':4.23,
             'totalReviews':23,
-            'cuisineTypes':['British'],}],
+            'cuisineTypes':['British'],
+            'imageName':'iHop.jpg'}],
 
         [{'username':'SubwayManager',
             'email':'subway@manager.com',
@@ -83,7 +85,8 @@ def populate():
             'close':datetime.time(19,0),
             'starRating':4.23,
             'totalReviews':23,
-            'cuisineTypes':['British'],}],
+            'cuisineTypes':['British'],
+            'imageName':'subway.webp'}],
 
         [{'username':'GreggsManager',
             'email':'greggs@manager.com',
@@ -97,7 +100,8 @@ def populate():
             'close':datetime.time(21,0),
             'starRating':4.23,
             'totalReviews':23,
-            'cuisineTypes':['British'],}]
+            'cuisineTypes':['British'],
+            'imageName':'greggs.jpg'}]
     ]
 
     for user in users:
@@ -107,7 +111,7 @@ def populate():
         manager_user = add_user(manager['username'], manager['email'])
         manager_user.isManager=True
         manager_user.save()
-        r = add_restaurant(rest_data['name'], rest_data['address'], manager_user, rest_data['starRating'], rest_data['totalReviews'])
+        r = add_restaurant(rest_data['name'], rest_data['address'], manager_user, rest_data['imageName'], rest_data['starRating'], rest_data['totalReviews'])
         for d in rest_data['dishes']:
             add_dishes(r, d['name'], d['price'])
         for c in rest_data['cuisineTypes']:
@@ -138,7 +142,7 @@ def add_dishes(rest, name, price):
     d.save()
     return d
 
-def add_restaurant(name, address, manager, starRating=1.0, totalReviews=0):
+def add_restaurant(name, address, manager, imageName, starRating=1.0, totalReviews=0, ):
     r = Restaurant.objects.get_or_create(name=name, address=address, manager=manager)[0]
     r.name=name
     r.address=address
@@ -147,6 +151,8 @@ def add_restaurant(name, address, manager, starRating=1.0, totalReviews=0):
     r.totalReviews=totalReviews
     r.tags = "Tag1, Tag2"
     r.save()
+    file_path = os.path.join(BASE_DIR,"population_resources",imageName)
+    r.image.save(imageName, File(open(file_path,'rb')))
     return r
     
 def add_user(username, email):
