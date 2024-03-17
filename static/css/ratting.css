@@ -1,0 +1,12 @@
+/* static/css/ratings.css */
+
+.star-rating {
+    display: flex;
+    align-items: center;
+    font-size: 1em;
+    color: #FFD700; /* 金色 */
+}
+
+.star-rating .fa-star {
+    margin-right: 5px;
+}
