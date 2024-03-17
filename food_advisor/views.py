@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from .forms import ManagerRegistrationForm, UserForm, UserProfileForm, ManagerRegistrationForm, RestaurantEditForm
+from .forms import DishForm, ManagerRegistrationForm, UserForm, UserProfileForm, ManagerRegistrationForm, RestaurantEditForm
 from django.contrib.auth.forms import UserCreationForm  
 from django.shortcuts import render, get_object_or_404
 
@@ -176,32 +176,26 @@ def show_restaurant_reviews(request, restaurant_id_slug):
     context_dict = {}
 
     try:
-        # Get restaurant from id, if not exists, throw error.
         restaurant = Restaurant.objects.get(id=restaurant_id_slug)
 
-        # Retrieve all reviews from restaurant.
         reviews = Review.objects.filter(restaurant=restaurant)
 
         context_dict['reviews'] = reviews
         context_dict['restaurant'] = restaurant
 
     except Restaurant.DoesNotExist:
-        # If don't find restaurant, do nothing.
         context_dict['restaurant'] = None
         context_dict['reviews'] = None
 
-    # Render response and return it to the client
     return render(request, 'food_advisor/show_restaurant_reviews.html', context=context_dict)
 
 def manage_restaurant(request, restaurant_id_slug):
     try:
         restaurant = Restaurant.objects.get(id=restaurant_id_slug)
+        dishes = Dish.objects.filter(restaurant=restaurant)  
     except Restaurant.DoesNotExist:
-        restaurant = None
+        return redirect('/food_advisor/')  
 
-    if restaurant is None:
-        return redirect('/food_advisor/')
-    
     form = RestaurantEditForm(instance=restaurant)
 
     if request.method == "POST":
@@ -209,28 +203,35 @@ def manage_restaurant(request, restaurant_id_slug):
 
         if form.is_valid():
             form.save()
-            return redirect(reverse('food_advisor:show_restaurant', kwargs={'restaurant_id_slug':restaurant_id_slug}))
+            return redirect(reverse('food_advisor:show_restaurant', kwargs={'restaurant_id_slug': restaurant_id_slug}))
         else:
             print(form.errors)
 
-    context_dict = {'form': form, 'restaurant':restaurant}
+    context_dict = {
+        'form': form,
+        'restaurant': restaurant,
+        'dishes': dishes  
+    }
     return render(request, 'food_advisor/manage_restaurant.html', context_dict)
-
-#def manage_restaurant(request, restaurant_id_slug):
-    # placeholder view logic for managing a restaurant
- #   return render(request, 'food_advisor/manage_restaurant.html', {})
 
 def add_dish_ajax(request, restaurant_id_slug):
     if request.is_ajax() and request.method == "POST":
+        try:
+            restaurant = Restaurant.objects.get(slug=restaurant_id_slug)
+        except Restaurant.DoesNotExist:
+            return JsonResponse({"error": "Restaurant not found"}, status=404)
+
         form = DishForm(request.POST)
         if form.is_valid():
             dish = form.save(commit=False)
-            dish.restaurant_id = restaurant_id_slug
+            dish.restaurant = restaurant  
             dish.save()
             return JsonResponse({"id": dish.id, "name": dish.name, "price": dish.price}, status=200)
         else:
             return JsonResponse({"error": form.errors}, status=400)
-    return JsonResponse({"error": "Not an AJAX request"}, status=400)
+    else:
+        return JsonResponse({"error": "Not an AJAX request"}, status=400)
+
 
 
 def delete_dish_ajax(request, dish_id):

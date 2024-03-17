@@ -2,7 +2,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
-from .models import UserProfile
+from .models import Dish, UserProfile
 
 
 from food_advisor.models import CuisineType, Restaurant
@@ -73,3 +73,20 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields= ('isManager',)
+
+class DishForm(forms.ModelForm):
+    class Meta:
+        model = Dish
+        fields = ('name', 'price', 'restaurant')  # Assuming these are the fields you want to include.
+
+    def __init__(self, *args, **kwargs):
+        super(DishForm, self).__init__(*args, **kwargs)
+        # Exclude the restaurant field from the form since it's set based on the URL and not user input
+        self.fields['restaurant'].widget = forms.HiddenInput()
+
+    def save(self, commit=True):
+        dish = super().save(commit=False)
+        # Additional processing can be added here if necessary
+        if commit:
+            dish.save()
+        return dish
