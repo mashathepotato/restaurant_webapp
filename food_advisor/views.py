@@ -15,7 +15,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, get_object_or_404
 
 def index(request):
-    restaurants = Restaurant.objects.all()  # Get all restaurants
+    restaurants = Restaurant.objects.all()
+    for restaurant in restaurants:
+        restaurant.full_stars = range(restaurant.getIntegerStars())
+        restaurant.empty_stars = range(5 - restaurant.getIntegerStars())
     return render(request, 'food_advisor/index.html', {'restaurants': restaurants})
 
 
@@ -189,13 +192,17 @@ def show_restaurant_reviews(request, restaurant_id_slug):
 
     return render(request, 'food_advisor/show_restaurant_reviews.html', context=context_dict)
 
+@login_required
 def manage_restaurant(request, restaurant_id_slug):
     try:
         restaurant = Restaurant.objects.get(id=restaurant_id_slug)
         dishes = Dish.objects.filter(restaurant=restaurant)  
     except Restaurant.DoesNotExist:
-        return redirect('/food_advisor/')  
+        restaurant = None
 
+    if restaurant is None or (restaurant.manager.user != request.user):
+        return redirect('/food_advisor/')
+    
     form = RestaurantEditForm(instance=restaurant)
 
     if request.method == "POST":

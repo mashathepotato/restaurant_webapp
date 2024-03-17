@@ -45,16 +45,17 @@ class ManagerRegistrationForm(UserCreationForm):
         return user
 
 class RestaurantEditForm(forms.ModelForm):
-    name = forms.CharField(max_length=128, help_text="Restaurant Name")
-    address = forms.CharField(max_length=128, help_text="Address")
-    timeOpens = forms.TimeField(help_text="Opening Time")
-    timeCloses = forms.TimeField(help_text="Closing Time")
-    tags = forms.CharField(max_length=128, help_text="Tags")
+    name = forms.CharField(max_length=128, label="Name")
+    address = forms.CharField(max_length=128, label="Address")
+    timeOpens = forms.TimeField(label="Opening Time")
+    timeCloses = forms.TimeField(label="Closing Time")
+    tags = forms.CharField(max_length=128, label="Tags")
     cuisineTypes = forms.ModelMultipleChoiceField(queryset=CuisineType.objects.all(),
                                                   label="Cuisine Type",
-                                                  widget=forms.CheckboxSelectMultiple,
-                                                  help_text="Cuisine Type",)
-    image = forms.ImageField(help_text="Cover Image")
+                                                  widget=forms.CheckboxSelectMultiple,)
+    image = forms.ImageField(label="Cover Image")
+
+    field_order=['name','address','timeOpens','timeCloses','tags','cuisineTypes','image']
 
     # An inline class to provide additional information on the form
     class Meta:

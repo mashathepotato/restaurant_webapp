@@ -10,6 +10,10 @@
     {% if restaurant %}
         <h1 class="display-4 text-center mb-3">{{ restaurant.name }}</h1>
 
+        {% if user.is_authenticated and user == restaurant.manager.user %}
+        <p class="display-8 text-center mb-3" style="color:#a32410">You are this restaurant's manager.</h3>
+        {% endif %}
+
         <div id="star-block" class="text-center mb-3">
             {% with ''|center:restaurant.getIntegerStars as range %}
             {% for _ in range %}
@@ -85,10 +89,11 @@
             {% endif %}
         </div>
 
-        <!-- This should only be visible to the restaurant's manager, add later. -->
+        {% if user.is_authenticated and user == restaurant.manager.user %}
         <div class="text-center mb-3">
             <a href="{% url 'food_advisor:manage_restaurant' restaurant.id %}" class="btn btn-info">Manage Restaurant Info</a>
         </div>
+        {% endif %}
 
     {% else %}
         <div class="alert alert-danger" role="alert">
