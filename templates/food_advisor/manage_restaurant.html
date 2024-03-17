@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load bootstrap4 %}
 
 {% block title %}
     Food Advisor - {{ restaurant.name }} (Manager Interface)
@@ -14,19 +15,16 @@
                 <div class="form-row">
                     {% for field in form.visible_fields %}
                         <div class="col-md-4 mb-3">
-                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                            {{ field.errors }}
                             {% if field.name == 'cuisineTypes' %}
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                                 <select multiple name="{{ field.name }}" class="form-control" id="{{ field.id_for_label }}">
                                     {% for cuisine in field.field.queryset %}
                                         <option value="{{ cuisine.id }}" {% if cuisine in restaurant.cuisineTypes.all %}selected{% endif %}>{{ cuisine.name }}</option>
                                     {% endfor %}
                                 </select>
+                                {{ field.errors }}
                             {% else %}
-                                {{ field }}
-                                <div class="invalid-feedback">
-                                    Please provide a valid {{ field.name }}。
-                                </div>
+                                {% bootstrap_field field show_label=True %}
                             {% endif %}
                         </div>
                     {% endfor %}
@@ -36,18 +34,23 @@
             
             <!-- Dish Management -->
             <h3 class="mt-5">Manage Dishes</h3>
-            <form id="add-dish-form">
-                <input type="text" name="name" placeholder="Dish Name" required />
-                <input type="number" name="price" placeholder="Price" required />
-                <button type="submit">Add Dish</button>
+            <form id="add-dish-form" method="post" action="{% url 'food_advisor:add_dish_ajax' restaurant.id %}"> <!-- Adjust the action URL as necessary -->
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="text" name="name" class="form-control" placeholder="Dish Name" required />
+                </div>
+                <div class="form-group">
+                    <input type="number" name="price" class="form-control" placeholder="Price" required />
+                </div>
+                <button type="submit" class="btn btn-success">Add Dish</button>
             </form>
             
             <div id="dishes-list" class="mt-3">
                 <h4>Current Menu</h4>
                 {% for dish in dishes %}
-                <div id="dish-{{ dish.id }}">
-                    Name: {{ dish.name }}, Price: {{ dish.price }}
-                    <button class="delete-dish-button" data-dish-id="{{ dish.id }}">Delete</button>
+                <div id="dish-{{ dish.id }}" class="alert alert-secondary d-flex justify-content-between align-items-center mt-2">
+                    <span>Name: {{ dish.name }}, Price: {{ dish.price }}</span>
+                    <button class="btn btn-danger delete-dish-button" data-dish-id="{{ dish.id }}">Delete</button>
                 </div>
                 {% empty %}
                 <p>No dishes yet.</p>

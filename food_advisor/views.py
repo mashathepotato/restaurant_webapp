@@ -222,7 +222,7 @@ def manage_restaurant(request, restaurant_id_slug):
     return render(request, 'food_advisor/manage_restaurant.html', context_dict)
 
 def add_dish_ajax(request, restaurant_id_slug):
-    if request.is_ajax() and request.method == "POST":
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and request.method == "POST":
         try:
             restaurant = Restaurant.objects.get(slug=restaurant_id_slug)
         except Restaurant.DoesNotExist:
