@@ -228,16 +228,18 @@ def add_dish_ajax(request, restaurant_id_slug):
         except Restaurant.DoesNotExist:
             return JsonResponse({"error": "Restaurant not found"}, status=404)
 
-        form = DishForm(request.POST)
+        form = DishForm(request.POST, request.FILES)  
         if form.is_valid():
             dish = form.save(commit=False)
             dish.restaurant = restaurant  
             dish.save()
             return JsonResponse({"id": dish.id, "name": dish.name, "price": dish.price}, status=200)
         else:
+            print(form.errors)  # Print form error
             return JsonResponse({"error": form.errors}, status=400)
     else:
         return JsonResponse({"error": "Not an AJAX request"}, status=400)
+
 
 
 

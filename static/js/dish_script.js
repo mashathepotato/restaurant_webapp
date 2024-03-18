@@ -46,7 +46,6 @@ function getCookie(name) {
 
 document.addEventListener('DOMContentLoaded', function() {
 
-    // Add dish event listener
     const addDishForm = document.querySelector('#add-dish-form');
     if (addDishForm) {
         addDishForm.addEventListener('submit', function(e) {
@@ -79,7 +78,6 @@ function addDish() {
             newDishElement.id = `dish-${data.id}`;
             newDishElement.innerHTML = `Name: ${data.name}, Price: ${data.price} <button class="delete-dish-button" data-dish-id="${data.id}">Delete</button>`;
             
-            // Add event listener to the new delete button
             newDishElement.querySelector('.delete-dish-button').addEventListener('click', function() {
                 deleteDish(data.id);
             });

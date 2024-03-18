@@ -34,7 +34,7 @@
             
             <!-- Dish Management -->
             <h3 class="mt-5">Manage Dishes</h3>
-            <form id="add-dish-form" method="post" action="{% url 'food_advisor:add_dish_ajax' restaurant.id %}"> <!-- Adjust the action URL as necessary -->
+            <form id="add-dish-form" method="post" action="{% url 'food_advisor:add_dish_ajax' restaurant.id %}"> <!-- this url may be wrong , slug instead-->
                 {% csrf_token %}
                 <div class="form-group">
                     <input type="text" name="name" class="form-control" placeholder="Dish Name" required />
