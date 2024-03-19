@@ -15,7 +15,11 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, get_object_or_404
 
 def index(request):
-    restaurants = Restaurant.objects.all()
+    search_query = request.GET.get('search', '')  # 从URL的查询参数中获取'search'参数的值
+    if search_query:
+        restaurants = Restaurant.objects.filter(cuisineTypes__name__icontains=search_query)
+    else:
+        restaurants = Restaurant.objects.all()
     for restaurant in restaurants:
         restaurant.full_stars = range(restaurant.getIntegerStars())
         restaurant.empty_stars = range(5 - restaurant.getIntegerStars())

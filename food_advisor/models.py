@@ -54,6 +54,11 @@ class Restaurant(models.Model):
         for type in self.cuisineTypes.all():
             list.append(str(type.name))
         return list
+    
+    def get_latest_review_content(self):
+        # Fetch the most recent review's content for this restaurant.
+        latest_review = self.review_set.order_by('-date').first()
+        return latest_review.content if latest_review else "No reviews yet."
 
 class Review(models.Model):
     id = models.AutoField(primary_key=True)
