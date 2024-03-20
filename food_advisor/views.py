@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Restaurant, Review, User, Dish, UserProfile
+from .models import Restaurant, Review, User, Dish, UserProfile, CuisineType
 from django.contrib.auth.forms import  AuthenticationForm 
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
@@ -15,11 +15,26 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, get_object_or_404
 
 def index(request):
-    restaurants = Restaurant.objects.all()
+    context_dict = {}
+    cuisine_types = CuisineType.objects.all()
+    search_query = request.GET.get('search', '')  # 从URL的查询参数中获取'search'参数的值
+    filter_query = request.GET.get('filter', '')
+    if search_query:
+        restaurants = Restaurant.objects.filter(name__icontains=search_query)
+        context_dict['prev_search'] = search_query
+    elif filter_query and (filter_query != "None"):
+        restaurants = Restaurant.objects.filter(cuisineTypes__name__icontains=filter_query)
+        context_dict['prev_filter'] = filter_query
+    else:
+        restaurants = Restaurant.objects.all()
     for restaurant in restaurants:
         restaurant.full_stars = range(restaurant.getIntegerStars())
         restaurant.empty_stars = range(5 - restaurant.getIntegerStars())
-    return render(request, 'food_advisor/index.html', {'restaurants': restaurants})
+    cuisine_types_text = []
+    for cuisine_type in cuisine_types:
+        cuisine_types_text.append(cuisine_type.name)
+    context_dict = context_dict | {'restaurants': restaurants, 'cuisine_types': cuisine_types_text}
+    return render(request, 'food_advisor/index.html', context_dict)
 
 
 def register_user(request):
@@ -69,6 +84,7 @@ def register_manager(request):
             registered = True
 
             login(request, manager)
+            return redirect('food_advisor:index')
         else:
             print(user_form.errors, manager_profile_form.errors,restaurant_form.errors)
     else:
@@ -95,7 +111,7 @@ def user_login(request):
                     login(request, user)
                     return redirect(reverse('food_advisor:index'))
                 else:
-                    messages(request, "Your foodAdvisor account is disabled.")
+                    messages.error(request, "Your foodAdvisor account is disabled.")
             else:
                 messages.error(request, "Invalid login details.")
         else:
@@ -158,7 +174,8 @@ def show_restaurant(request, restaurant_id_slug):
     try:
         # Get restaurant from id, if not exists, throw error.
         restaurant = Restaurant.objects.get(id=restaurant_id_slug)
-
+        restaurant.full_stars = range(restaurant.getIntegerStars())
+        restaurant.empty_stars = range(5 - restaurant.getIntegerStars())
         # Retrieve all dishes from restaurant.
         dishes = Dish.objects.filter(restaurant=restaurant)
 
@@ -186,14 +203,26 @@ def show_restaurant_reviews(request, restaurant_id_slug):
         context_dict['restaurant'] = restaurant
         context_dict['restaurant_id']=restaurant_id_slug
 
-        if request.method == 'POST':
-            review_form = ReviewForm(request.POST)
+        userNotReviewed = True
+        for review in reviews:
+            if review.user == request.user:
+                userNotReviewed = False
+        context_dict['userNotReviewed'] = userNotReviewed
 
+        if request.method == 'POST' and userNotReviewed:
+            review_form = ReviewForm(request.POST)
             if review_form.is_valid():
                 review = review_form.save(commit=False)
                 review.restaurant = restaurant
                 review.user = request.user
                 review.save()
+                new_total_stars = restaurant.totalReviews * restaurant.starRating
+                new_total_reviews = restaurant.totalReviews
+                new_total_stars += int(review_form.cleaned_data['starRating'])
+                new_total_reviews += 1
+                restaurant.totalReviews = new_total_reviews
+                restaurant.starRating = new_total_stars / new_total_reviews
+                restaurant.save()
                 return redirect(reverse('food_advisor:show_restaurant_reviews', kwargs={'restaurant_id_slug':restaurant_id_slug}))  
             else:
                 print(review_form.errors)
@@ -235,63 +264,47 @@ def review_reply(request, review_id, restaurant_id_slug):
 
 
 @login_required
-def manage_restaurant(request, restaurant_id_slug):
-    try:
-        restaurant = Restaurant.objects.get(id=restaurant_id_slug)
-        dishes = Dish.objects.filter(restaurant=restaurant)  
-    except Restaurant.DoesNotExist:
-        restaurant = None
-
-    if restaurant is None or (restaurant.manager.user != request.user):
-        return redirect('/food_advisor/')
+def manage_restaurant(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id, manager__user=request.user)
+    dishes = Dish.objects.filter(restaurant=restaurant)
     
-    form = RestaurantEditForm(instance=restaurant)
-
     if request.method == "POST":
         form = RestaurantEditForm(request.POST, request.FILES, instance=restaurant)
-
         if form.is_valid():
             form.save()
-            return redirect(reverse('food_advisor:show_restaurant', kwargs={'restaurant_id_slug': restaurant_id_slug}))
-        else:
-            print(form.errors)
+            return redirect(reverse('food_advisor:show_restaurant', kwargs={'restaurant_id': restaurant.id}))
+    else:
+        form = RestaurantEditForm(instance=restaurant)
 
     context_dict = {
         'form': form,
         'restaurant': restaurant,
-        'dishes': dishes  
+        'dishes': dishes,
     }
     return render(request, 'food_advisor/manage_restaurant.html', context_dict)
 
-def add_dish_ajax(request, restaurant_id_slug):
+@login_required
+def add_dish_ajax(request, restaurant_id):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and request.method == "POST":
-        try:
-            restaurant = Restaurant.objects.get(slug=restaurant_id_slug)
-        except Restaurant.DoesNotExist:
-            return JsonResponse({"error": "Restaurant not found"}, status=404)
+        restaurant = get_object_or_404(Restaurant, id=restaurant_id)
 
-        form = DishForm(request.POST, request.FILES)  
+        form = DishForm(request.POST, request.FILES)
         if form.is_valid():
             dish = form.save(commit=False)
-            dish.restaurant = restaurant  
+            dish.restaurant = restaurant
             dish.save()
             return JsonResponse({"id": dish.id, "name": dish.name, "price": dish.price}, status=200)
         else:
-            print(form.errors)  # Print form error
-            return JsonResponse({"error": form.errors}, status=400)
+            return JsonResponse({"error": form.errors.as_json()}, status=400)
     else:
         return JsonResponse({"error": "Not an AJAX request"}, status=400)
 
-
-
-
+@login_required
 def delete_dish_ajax(request, dish_id):
     if request.is_ajax() and request.method == "DELETE":
-        try:
-            dish = Dish.objects.get(id=dish_id, restaurant__manager__user=request.user)
-            dish.delete()
-            return JsonResponse({"message": "Dish deleted successfully"}, status=200)
-        except Dish.DoesNotExist:
-            return JsonResponse({"error": "Dish not found"}, status=404)
-    return JsonResponse({"error": "Not an AJAX request"}, status=400)
+        dish = get_object_or_404(Dish, id=dish_id, restaurant__manager__user=request.user)
+        dish.delete()
+        return JsonResponse({"message": "Dish deleted successfully"}, status=200)
+    else:
+        return JsonResponse({"error": "Not an AJAX request"}, status=400)
 

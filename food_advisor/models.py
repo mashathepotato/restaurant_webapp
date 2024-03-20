@@ -3,14 +3,13 @@ from django.contrib.auth.models import User
 import datetime
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, related_name="user_profile", on_delete=models.CASCADE)
     isManager = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username
 
 STAR_CHOICES = [
-        (0, '0 stars'),
         (1, '1 star'),
         (2, '2 stars'),
         (3, '3 stars'),
@@ -54,6 +53,11 @@ class Restaurant(models.Model):
         for type in self.cuisineTypes.all():
             list.append(str(type.name))
         return list
+    
+    def get_latest_review_content(self):
+        # Fetch the most recent review's content for this restaurant.
+        latest_review = self.review_set.order_by('-date').first()
+        return latest_review.content if latest_review else "No reviews yet."
 
 class Review(models.Model):
     id = models.AutoField(primary_key=True)

@@ -4,66 +4,56 @@
 
 {% block title %}
     Food Advisor - {{ restaurant.name }} (Manager Interface)
-{% endblock title %}
+{% endblock %}
 
 {% block content %}
-    {% if restaurant %}
-        <div class="container mt-5">
-            <h2>Manage Restaurant Information</h2>
-            <form enctype="multipart/form-data" id="restaurant_manage_form" method="post" action="{% url 'food_advisor:manage_restaurant' restaurant.id %}" class="needs-validation" novalidate>
-                {% csrf_token %}
-                <div class="form-row">
-                    {% for field in form.visible_fields %}
-                        <div class="col-md-4 mb-3">
-                            {% if field.name == 'cuisineTypes' %}
-                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                <select multiple name="{{ field.name }}" class="form-control" id="{{ field.id_for_label }}">
-                                    {% for cuisine in field.field.queryset %}
-                                        <option value="{{ cuisine.id }}" {% if cuisine in restaurant.cuisineTypes.all %}selected{% endif %}>{{ cuisine.name }}</option>
-                                    {% endfor %}
-                                </select>
-                                {{ field.errors }}
-                            {% else %}
-                                {% bootstrap_field field show_label=True %}
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
-                <button class="btn btn-primary" type="submit">Update Restaurant Info</button>
-            </form>
-            
-            <!-- Dish Management -->
-            <h3 class="mt-5">Manage Dishes</h3>
-            <form id="add-dish-form" method="post" action="{% url 'food_advisor:add_dish_ajax' restaurant.id %}"> <!-- this url may be wrong , slug instead-->
-                {% csrf_token %}
-                <div class="form-group">
-                    <input type="text" name="name" class="form-control" placeholder="Dish Name" required />
-                </div>
-                <div class="form-group">
-                    <input type="number" name="price" class="form-control" placeholder="Price" required />
-                </div>
-                <button type="submit" class="btn btn-success">Add Dish</button>
-            </form>
-            
-            <div id="dishes-list" class="mt-3">
-                <h4>Current Menu</h4>
-                {% for dish in dishes %}
-                <div id="dish-{{ dish.id }}" class="alert alert-secondary d-flex justify-content-between align-items-center mt-2">
-                    <span>Name: {{ dish.name }}, Price: {{ dish.price }}</span>
-                    <button class="btn btn-danger delete-dish-button" data-dish-id="{{ dish.id }}">Delete</button>
-                </div>
-                {% empty %}
-                <p>No dishes yet.</p>
+{% if restaurant %}
+    <div class="container mt-5">
+        <h2>Manage Restaurant Information</h2>
+        <form enctype="multipart/form-data" id="restaurant_manage_form" method="post" action="{% url 'food_advisor:manage_restaurant' restaurant.id %}" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="form-row">
+                {% for field in form.visible_fields %}
+                    <div class="col-md-4 mb-3">
+                        {% bootstrap_field field show_label=True %}
+                    </div>
                 {% endfor %}
             </div>
+            <button class="btn btn-primary" type="submit">Update Restaurant Info</button>
+        </form>
+
+        <!-- Dish Management -->
+        <h3 class="mt-5">Manage Dishes</h3>
+        <form id="add-dish-form" method="post" action="#" data-restaurant-id="{{ restaurant.id }}"> <!-- Use '#' for action since AJAX handles the post -->
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" name="name" class="form-control" placeholder="Dish Name" required />
+            </div>
+            <div class="form-group">
+                <input type="number" name="price" class="form-control" placeholder="Price" required />
+            </div>
+            <button type="submit" class="btn btn-success">Add Dish</button>
+        </form>
+
+        <div id="dishes-list" class="mt-3">
+            <h4>Current Menu</h4>
+            {% for dish in dishes %}
+            <div id="dish-{{ dish.id }}" class="alert alert-secondary d-flex justify-content-between align-items-center mt-2">
+                <span>Name: {{ dish.name }}, Price: {{ dish.price }}</span>
+                <button class="btn btn-danger delete-dish-button" data-dish-id="{{ dish.id }}">Delete</button>
+            </div>
+            {% empty %}
+            <p>No dishes yet.</p>
+            {% endfor %}
         </div>
-    {% else %}
-        <div class="alert alert-danger" role="alert">
-            Restaurant does not exist.
-        </div>
-    {% endif %}
+    </div>
+{% else %}
+    <div class="alert alert-danger" role="alert">
+        Restaurant does not exist.
+    </div>
+{% endif %}
 {% endblock content %}
 
-{% block extra_js %}
-    <script src="{% static 'js/dish_script.js' %}"></script>
-{% endblock extra_js %}
+{% block script %}
+<script src="{% static 'js/dish_script.js' %}"></script>
+{% endblock script %}

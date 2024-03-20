@@ -65,7 +65,7 @@ class RestaurantEditForm(forms.ModelForm):
 
 #ReviewForm creates reviews from show_restaurant_reviews page
 class ReviewForm(forms.ModelForm):
-    content = forms.CharField(max_length=1280)
+    content = forms.CharField(max_length=1280, label="Content")
     starRating = forms.ChoiceField(choices = STAR_CHOICES, label="Star Rating")
 
     class Meta:
