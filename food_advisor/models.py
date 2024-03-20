@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 import datetime
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, related_name="user_profile", on_delete=models.CASCADE)
     isManager = models.BooleanField(default=False)
 
     def __str__(self):

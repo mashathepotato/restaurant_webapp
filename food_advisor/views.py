@@ -84,6 +84,7 @@ def register_manager(request):
             registered = True
 
             login(request, manager)
+            return redirect('food_advisor:index')
         else:
             print(user_form.errors, manager_profile_form.errors,restaurant_form.errors)
     else:
@@ -110,7 +111,7 @@ def user_login(request):
                     login(request, user)
                     return redirect(reverse('food_advisor:index'))
                 else:
-                    messages(request, "Your foodAdvisor account is disabled.")
+                    messages.error(request, "Your foodAdvisor account is disabled.")
             else:
                 messages.error(request, "Invalid login details.")
         else:
@@ -203,14 +204,26 @@ def show_restaurant_reviews(request, restaurant_id_slug):
         context_dict['restaurant'] = restaurant
         context_dict['restaurant_id']=restaurant_id_slug
 
-        if request.method == 'POST':
-            review_form = ReviewForm(request.POST)
+        userNotReviewed = True
+        for review in reviews:
+            if review.user == request.user:
+                userNotReviewed = False
+        context_dict['userNotReviewed'] = userNotReviewed
 
+        if request.method == 'POST' and userNotReviewed:
+            review_form = ReviewForm(request.POST)
             if review_form.is_valid():
                 review = review_form.save(commit=False)
                 review.restaurant = restaurant
                 review.user = request.user
                 review.save()
+                new_total_stars = restaurant.totalReviews * restaurant.starRating
+                new_total_reviews = restaurant.totalReviews
+                new_total_stars += int(review_form.cleaned_data['starRating'])
+                new_total_reviews += 1
+                restaurant.totalReviews = new_total_reviews
+                restaurant.starRating = new_total_stars / new_total_reviews
+                restaurant.save()
                 return redirect(reverse('food_advisor:show_restaurant_reviews', kwargs={'restaurant_id_slug':restaurant_id_slug}))  
             else:
                 print(review_form.errors)
