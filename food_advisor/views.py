@@ -195,7 +195,3 @@ def manage_restaurant(request, restaurant_id_slug):
 
     context_dict = {'form': form, 'restaurant':restaurant}
     return render(request, 'food_advisor/manage_restaurant.html', context_dict)
-
-#def manage_restaurant(request, restaurant_id_slug):
-    # placeholder view logic for managing a restaurant
- #   return render(request, 'food_advisor/manage_restaurant.html', {})

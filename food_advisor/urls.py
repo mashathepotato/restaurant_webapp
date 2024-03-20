@@ -7,7 +7,7 @@ urlpatterns = [
     path('', views.index, name='index'), # No home page url, index is home page.
     # Uncomment when appropriate views are created.
     path('register/', views.register_user, name='registerUser'),
-    path('signin/', views.user_login, name='signin'),
+    path('login/', views.user_login, name='user_login'),
     path('owner/', views.register_manager, name='owner'),
     path('restaurant/<slug:restaurant_id_slug>/', views.show_restaurant, name='show_restaurant'),
     path('restaurant/<slug:restaurant_id_slug>/reviews/', views.show_restaurant_reviews, name='show_restaurant_reviews'),
