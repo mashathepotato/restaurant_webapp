@@ -68,8 +68,8 @@ def populate():
             'Manager':'iHopManager',
             'open':datetime.time(7,0),
             'close':datetime.time(0,0),
-            'starRating':4.23,
-            'totalReviews':23,
+            'starRating':3.66666,
+            'totalReviews':3,
             'cuisineTypes':['British'],
             'imageName':'iHop.jpg'}],
 
@@ -83,8 +83,8 @@ def populate():
             'Manager':'SubwayManager',
             'open':datetime.time(7,0),
             'close':datetime.time(19,0),
-            'starRating':4.23,
-            'totalReviews':23,
+            'starRating':2.33333,
+            'totalReviews':3,
             'cuisineTypes':['British'],
             'imageName':'subway.webp'}],
 
@@ -98,8 +98,8 @@ def populate():
             'Manager':'GreggsManager',
             'open':datetime.time(5,0),
             'close':datetime.time(21,0),
-            'starRating':4.23,
-            'totalReviews':23,
+            'starRating':3.5,
+            'totalReviews':2,
             'cuisineTypes':['British'],
             'imageName':'greggs.jpg'}]
     ]
