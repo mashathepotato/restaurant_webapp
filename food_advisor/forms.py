@@ -76,6 +76,12 @@ class LoginForm(AuthenticationForm):
     password = forms.CharField(label="Password", widget=forms.PasswordInput, required=True)
 
 
+class ReplyContentForm(forms.ModelForm):
+    replyContent = forms.CharField(max_length=1280, help_text="Type review reply content here:")
+
+    class Meta:
+        model = Review
+        fields = ['replyContent']
 
 class UserProfileForm(forms.ModelForm):
     class Meta:

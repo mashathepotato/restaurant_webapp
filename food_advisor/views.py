@@ -1,14 +1,14 @@
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Restaurant, Review, User, Dish
+from .models import Restaurant, Review, User, Dish, UserProfile
 from django.contrib.auth.forms import  AuthenticationForm 
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from .forms import ManagerRegistrationForm, UserForm, UserProfileForm, ManagerRegistrationForm, RestaurantEditForm, ReviewForm
+from .forms import ManagerRegistrationForm, UserForm, UserProfileForm, ManagerRegistrationForm, RestaurantEditForm, ReviewForm, ReplyContentForm
 from django.shortcuts import render, get_object_or_404
 
 def index(request):
@@ -153,7 +153,6 @@ def show_restaurant(request, restaurant_id_slug):
 
 def show_restaurant_reviews(request, restaurant_id_slug):
     context_dict = {}
-
     try:
         # Get restaurant from id, if not exists, throw error.
         restaurant = Restaurant.objects.get(id=restaurant_id_slug)
@@ -188,6 +187,32 @@ def show_restaurant_reviews(request, restaurant_id_slug):
 
     # Render response and return it to the client
     return render(request, 'food_advisor/show_restaurant_reviews.html', context=context_dict)
+
+def review_reply(request, review_id, restaurant_id_slug):
+    context_dict = {}
+    try:
+        review = Review.objects.get(id=review_id)
+        restaurant = Restaurant.objects.get(id=restaurant_id_slug)
+        context_dict['review'] = review
+        context_dict['restaurant_id']=restaurant_id_slug
+
+        if request.method == 'POST':
+            review_form = ReplyContentForm(request.POST, instance=review)
+
+            if review_form.is_valid():
+                review.save()
+                return redirect(reverse('food_advisor:show_restaurant_reviews', kwargs={'restaurant_id_slug':review.restaurant.id}))  
+            else:
+                print(review_form.errors)
+        else:
+            review_form = ReplyContentForm(instance=review)
+            context_dict['review_form'] = review_form
+
+    except Review.DoesNotExist:
+        context_dict['review'] = None
+
+    return render(request, 'food_advisor/review_reply.html', context=context_dict)
+
 
 @login_required
 def manage_restaurant(request, restaurant_id_slug):
