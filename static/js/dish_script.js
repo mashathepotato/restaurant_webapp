@@ -40,14 +40,14 @@ function addDish(form) {
     const formData = new FormData(form);
     const restaurantId = form.getAttribute('data-restaurant-id');
 
-    fetch(`/ajax/add_dish/${restaurantId}/`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'X-Requested-With': 'XMLHttpRequest', 
-        },
-    })
+    fetch(`/food_advisor/ajax/add_dish/${restaurantId}/`, {
+    method: 'POST',
+    body: formData,
+    headers: {
+        'X-CSRFToken': getCookie('csrftoken'),
+        'X-Requested-With': 'XMLHttpRequest', 
+    },
+})
     .then(response => response.json())
     .then(data => {
         if (data.id) {

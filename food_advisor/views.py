@@ -218,7 +218,8 @@ def manage_restaurant(request, restaurant_id):
         form = RestaurantEditForm(request.POST, request.FILES, instance=restaurant)
         if form.is_valid():
             form.save()
-            return redirect(reverse('food_advisor:show_restaurant', kwargs={'restaurant_id': restaurant.id}))
+            # Use restaurant_id_slug with a numeric ID for redirection
+            return redirect('food_advisor:show_restaurant', restaurant_id_slug=restaurant.id)
     else:
         form = RestaurantEditForm(instance=restaurant)
 
@@ -228,6 +229,7 @@ def manage_restaurant(request, restaurant_id):
         'dishes': dishes,
     }
     return render(request, 'food_advisor/manage_restaurant.html', context_dict)
+
 
 @login_required
 def add_dish_ajax(request, restaurant_id):
