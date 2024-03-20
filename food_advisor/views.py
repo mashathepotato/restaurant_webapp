@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from .forms import DishForm, ManagerRegistrationForm, UserForm, UserProfileForm, ManagerRegistrationForm, RestaurantEditForm
+from .forms import DishForm, ManagerRegistrationForm, UserForm, UserProfileForm, ManagerRegistrationForm, RestaurantEditForm, ReviewForm
 from django.contrib.auth.forms import UserCreationForm  
 from django.shortcuts import render, get_object_or_404
 
@@ -185,6 +185,23 @@ def show_restaurant_reviews(request, restaurant_id_slug):
 
         context_dict['reviews'] = reviews
         context_dict['restaurant'] = restaurant
+        context_dict['restaurant_id']=restaurant_id_slug
+
+        if request.method == 'POST':
+            review_form = ReviewForm(request.POST)
+
+            if review_form.is_valid():
+                review = review_form.save(commit=False)
+                review.restaurant = restaurant
+                review.user = request.user
+                review.save()
+                return redirect(reverse('food_advisor:show_restaurant_reviews', kwargs={'restaurant_id_slug':restaurant_id_slug}))  
+            else:
+                print(review_form.errors)
+        else:
+            review_form = ReviewForm()
+            context_dict['review_form'] = review_form
+
 
     except Restaurant.DoesNotExist:
         context_dict['restaurant'] = None

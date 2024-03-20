@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from .models import Dish, UserProfile
 
 
-from food_advisor.models import CuisineType, Restaurant
+from food_advisor.models import CuisineType, Restaurant, Review, STAR_CHOICES
 
 from food_advisor.models import CuisineType, Restaurant
 
@@ -62,6 +62,15 @@ class RestaurantEditForm(forms.ModelForm):
         # Provide an association between the ModelForm and a model
         model = Restaurant
         exclude = ('id','manager','starRating','totalReviews',)
+
+#ReviewForm creates reviews from show_restaurant_reviews page
+class ReviewForm(forms.ModelForm):
+    content = forms.CharField(max_length=1280, help_text="Type review content here:")
+    starRating = forms.ChoiceField(choices = STAR_CHOICES)
+
+    class Meta:
+        model = Review
+        exclude = ('id','restaurant','user','date','replyContent')
 
 # LoginForm for user login
 class LoginForm(AuthenticationForm):
