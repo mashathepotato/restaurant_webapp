@@ -15,11 +15,12 @@
         {% endif %}
 
         <div id="star-block" class="text-center mb-3">
-            {% with ''|center:restaurant.getIntegerStars as range %}
-            {% for _ in range %}
-                <img src="{% static 'images/star.png' %}" class="img-fluid" style="height: 25px;">
+            {% for star in restaurant.full_stars %}
+                <span class="fas fa-star"></span> <!-- full stars -->
             {% endfor %}
-            {% endwith %}
+            {% for star in restaurant.empty_stars %}
+                <span class="far fa-star"></span> <!-- empty stars -->
+            {% endfor %}
 
             <p class="lead">Average Star Rating: {{ restaurant.starRating|floatformat:2 }}</p>
         </div>

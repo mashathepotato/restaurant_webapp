@@ -83,8 +83,8 @@ def populate():
             'Manager':'SubwayManager',
             'open':datetime.time(7,0),
             'close':datetime.time(19,0),
-            'starRating':4.23,
-            'totalReviews':23,
+            'starRating':1.05,
+            'totalReviews':58,
             'cuisineTypes':['British'],
             'imageName':'subway.webp'}],
 
