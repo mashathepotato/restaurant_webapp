@@ -1,12 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Delete dish event listeners
     const deleteButtons = document.querySelectorAll('.delete-dish-button');
     deleteButtons.forEach(button => button.addEventListener('click', function() {
         const dishId = this.getAttribute('data-dish-id');
         deleteDish(dishId);
     }));
 
-    // Add dish form submission
     const addDishForm = document.querySelector('#add-dish-form');
     if (addDishForm) {
         addDishForm.addEventListener('submit', function(e) {
@@ -22,7 +20,7 @@ function deleteDish(dishId) {
         headers: {
             'X-CSRFToken': getCookie('csrftoken'),
             'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest', // Ensure this header is set for AJAX request recognition
+            'X-Requested-With': 'XMLHttpRequest', 
         },
     })
     .then(response => {
@@ -40,7 +38,7 @@ function deleteDish(dishId) {
 function addDish(form) {
     const formData = new FormData(form);
     const restaurantId = form.getAttribute('data-restaurant-id');
-    formData.append('restaurant', restaurantId); // Manually append the restaurant field
+    formData.append('restaurant', restaurantId); 
 
     fetch(`/food_advisor/ajax/add_dish/${restaurantId}/`, {
         method: 'POST',
@@ -63,7 +61,7 @@ function addDish(form) {
             });
 
             dishesList.appendChild(newDishElement);
-            form.reset(); // Reset form fields after successful submission
+            form.reset(); 
         } else {
             alert("Error: Couldn't add the dish.");
         }
