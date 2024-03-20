@@ -17,11 +17,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function deleteDish(dishId) {
-    fetch(`/ajax/delete_dish/${dishId}/`, {
+    fetch(`/food_advisor/ajax/delete_dish/${dishId}/`, {
         method: 'DELETE',
         headers: {
             'X-CSRFToken': getCookie('csrftoken'),
             'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest', // Ensure this header is set for AJAX request recognition
         },
     })
     .then(response => {
@@ -39,14 +40,15 @@ function deleteDish(dishId) {
 function addDish(form) {
     const formData = new FormData(form);
     const restaurantId = form.getAttribute('data-restaurant-id');
+    formData.append('restaurant', restaurantId); // Manually append the restaurant field
 
-    fetch(`/ajax/add_dish/${restaurantId}/`, {
-    method: 'POST',
-    body: formData,
-    headers: {
-        'X-CSRFToken': getCookie('csrftoken'),
-        'X-Requested-With': 'XMLHttpRequest', 
-    },
+    fetch(`/food_advisor/ajax/add_dish/${restaurantId}/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest',
+        },
 })
     .then(response => response.json())
     .then(data => {
