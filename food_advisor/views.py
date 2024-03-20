@@ -272,7 +272,8 @@ def manage_restaurant(request, restaurant_id):
         form = RestaurantEditForm(request.POST, request.FILES, instance=restaurant)
         if form.is_valid():
             form.save()
-            return redirect(reverse('food_advisor:show_restaurant', kwargs={'restaurant_id': restaurant.id}))
+            # Use restaurant_id_slug with a numeric ID for redirection
+            return redirect('food_advisor:show_restaurant', restaurant_id_slug=restaurant.id)
     else:
         form = RestaurantEditForm(instance=restaurant)
 
@@ -282,6 +283,7 @@ def manage_restaurant(request, restaurant_id):
         'dishes': dishes,
     }
     return render(request, 'food_advisor/manage_restaurant.html', context_dict)
+
 
 @login_required
 def add_dish_ajax(request, restaurant_id):
@@ -301,10 +303,9 @@ def add_dish_ajax(request, restaurant_id):
 
 @login_required
 def delete_dish_ajax(request, dish_id):
-    if request.is_ajax() and request.method == "DELETE":
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and request.method == 'DELETE':
         dish = get_object_or_404(Dish, id=dish_id, restaurant__manager__user=request.user)
         dish.delete()
         return JsonResponse({"message": "Dish deleted successfully"}, status=200)
     else:
         return JsonResponse({"error": "Not an AJAX request"}, status=400)
-
