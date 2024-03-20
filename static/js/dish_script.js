@@ -40,7 +40,7 @@ function addDish(form) {
     const formData = new FormData(form);
     const restaurantId = form.getAttribute('data-restaurant-id');
 
-    fetch(`/food_advisor/ajax/add_dish/${restaurantId}/`, {
+    fetch(`/ajax/add_dish/${restaurantId}/`, {
     method: 'POST',
     body: formData,
     headers: {
