@@ -239,63 +239,47 @@ def show_restaurant_reviews(request, restaurant_id_slug):
     return render(request, 'food_advisor/show_restaurant_reviews.html', context=context_dict)
 
 @login_required
-def manage_restaurant(request, restaurant_id_slug):
-    try:
-        restaurant = Restaurant.objects.get(id=restaurant_id_slug)
-        dishes = Dish.objects.filter(restaurant=restaurant)  
-    except Restaurant.DoesNotExist:
-        restaurant = None
-
-    if restaurant is None or (restaurant.manager.user != request.user):
-        return redirect('/food_advisor/')
+def manage_restaurant(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id, manager__user=request.user)
+    dishes = Dish.objects.filter(restaurant=restaurant)
     
-    form = RestaurantEditForm(instance=restaurant)
-
     if request.method == "POST":
         form = RestaurantEditForm(request.POST, request.FILES, instance=restaurant)
-
         if form.is_valid():
             form.save()
-            return redirect(reverse('food_advisor:show_restaurant', kwargs={'restaurant_id_slug': restaurant_id_slug}))
-        else:
-            print(form.errors)
+            return redirect(reverse('food_advisor:show_restaurant', kwargs={'restaurant_id': restaurant.id}))
+    else:
+        form = RestaurantEditForm(instance=restaurant)
 
     context_dict = {
         'form': form,
         'restaurant': restaurant,
-        'dishes': dishes  
+        'dishes': dishes,
     }
     return render(request, 'food_advisor/manage_restaurant.html', context_dict)
 
-def add_dish_ajax(request, restaurant_id_slug):
+@login_required
+def add_dish_ajax(request, restaurant_id):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and request.method == "POST":
-        try:
-            restaurant = Restaurant.objects.get(slug=restaurant_id_slug)
-        except Restaurant.DoesNotExist:
-            return JsonResponse({"error": "Restaurant not found"}, status=404)
+        restaurant = get_object_or_404(Restaurant, id=restaurant_id)
 
-        form = DishForm(request.POST, request.FILES)  
+        form = DishForm(request.POST, request.FILES)
         if form.is_valid():
             dish = form.save(commit=False)
-            dish.restaurant = restaurant  
+            dish.restaurant = restaurant
             dish.save()
             return JsonResponse({"id": dish.id, "name": dish.name, "price": dish.price}, status=200)
         else:
-            print(form.errors)  # Print form error
-            return JsonResponse({"error": form.errors}, status=400)
+            return JsonResponse({"error": form.errors.as_json()}, status=400)
     else:
         return JsonResponse({"error": "Not an AJAX request"}, status=400)
 
-
-
-
+@login_required
 def delete_dish_ajax(request, dish_id):
     if request.is_ajax() and request.method == "DELETE":
-        try:
-            dish = Dish.objects.get(id=dish_id, restaurant__manager__user=request.user)
-            dish.delete()
-            return JsonResponse({"message": "Dish deleted successfully"}, status=200)
-        except Dish.DoesNotExist:
-            return JsonResponse({"error": "Dish not found"}, status=404)
-    return JsonResponse({"error": "Not an AJAX request"}, status=400)
+        dish = get_object_or_404(Dish, id=dish_id, restaurant__manager__user=request.user)
+        dish.delete()
+        return JsonResponse({"message": "Dish deleted successfully"}, status=200)
+    else:
+        return JsonResponse({"error": "Not an AJAX request"}, status=400)
 

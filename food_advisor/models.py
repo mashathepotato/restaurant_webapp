@@ -10,7 +10,6 @@ class UserProfile(models.Model):
         return self.user.username
 
 STAR_CHOICES = [
-        (0, '0 stars'),
         (1, '1 star'),
         (2, '2 stars'),
         (3, '3 stars'),
