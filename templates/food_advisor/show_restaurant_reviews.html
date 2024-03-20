@@ -41,9 +41,9 @@
         {% endif %}
     </div>
 
-    <div>
+    <div class="container mt-5">
         {% if user.is_authenticated and user != restaurant.manager.user %}
-        <form method="post" action="{% url 'food_advisor:show_restaurant_reviews' restaurant_id_slug=restaurant_id %}">
+        <form enctype="multipart/form-data" method="post" action="{% url 'food_advisor:show_restaurant_reviews' restaurant_id_slug=restaurant_id %}">
             {% csrf_token %}
             <input type="hidden" name="restaurant_id" value="{{ restaurant_id }}">
             <input type="hidden" name="user" value="{{ user.id }}">
