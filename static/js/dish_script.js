@@ -1,11 +1,19 @@
-// static/js/dish_script.js
-
 document.addEventListener('DOMContentLoaded', function() {
+    // Delete dish event listeners
     const deleteButtons = document.querySelectorAll('.delete-dish-button');
     deleteButtons.forEach(button => button.addEventListener('click', function() {
         const dishId = this.getAttribute('data-dish-id');
         deleteDish(dishId);
     }));
+
+    // Add dish form submission
+    const addDishForm = document.querySelector('#add-dish-form');
+    if (addDishForm) {
+        addDishForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            addDish(this);
+        });
+    }
 });
 
 function deleteDish(dishId) {
@@ -28,39 +36,11 @@ function deleteDish(dishId) {
     });
 }
 
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-
-document.addEventListener('DOMContentLoaded', function() {
-
-    const addDishForm = document.querySelector('#add-dish-form');
-    if (addDishForm) {
-        addDishForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            addDish();
-        });
-    }
-});
-
-function addDish() {
-    const form = document.querySelector('#add-dish-form');
+function addDish(form) {
     const formData = new FormData(form);
-    const restaurantIdSlug = form.getAttribute('data-restaurant-id'); 
+    const restaurantId = form.getAttribute('data-restaurant-id');
 
-    fetch(`/ajax/add_dish/${restaurantIdSlug}/`, {
+    fetch(`/ajax/add_dish/${restaurantId}/`, {
         method: 'POST',
         body: formData,
         headers: {
@@ -68,11 +48,9 @@ function addDish() {
             'X-Requested-With': 'XMLHttpRequest', 
         },
     })
-    
     .then(response => response.json())
     .then(data => {
         if (data.id) {
-            //  has appended the new dish to the list
             const dishesList = document.querySelector('#dishes-list');
             const newDishElement = document.createElement('div');
             newDishElement.id = `dish-${data.id}`;
@@ -91,4 +69,19 @@ function addDish() {
     .catch(error => {
         console.error('Error:', error);
     });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }
