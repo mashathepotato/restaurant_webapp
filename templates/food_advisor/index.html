@@ -35,19 +35,19 @@
         <div class="col-md-8 col-lg-6 mx-auto">
             <select id="selectLeo" class="form-control" onchange="showSelectedValue()">
                 <option value="-1" disabled selected>Filter by Cuisine</option>
-                <option value="0">Coffee</option>
+                <option value="0">India</option>
                 <option value="1">Chinese</option>
-                <option value="2">Mexican</option>
-                <option value="3">Italian</option>
-                <option value="4">Clear Filters</option>
+                <option value="2">Italian</option>
+                <option value="3">French</option>
+                <option value="4">British</option>
             </select>
         </div>
     </div>
 
     <!-- Image Gallery Grid -->
+    <!-- Image Gallery Grid -->
     <div class="row g-4">
         {% for i in restaurants %}
-            <!-- 添加 mb-4 类在卡片底部留出空间 -->
             <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow-sm">
                     <a href="{% url 'food_advisor:show_restaurant' restaurant_id_slug=i.id %}">
@@ -59,7 +59,12 @@
                     </a>
                     <div class="card-body">
                         <h5 class="card-title">{{ i.name }}</h5>
-                        <p class="card-text">{{ i.body|slice:'100' }}...</p>
+                        <!-- Display the latest review content here -->
+                        <p class="user-review">"{{ i.get_latest_review_content }}"</p>
+                        <div class="star-rating">
+                            <!-- Star rating display -->
+                        </div>
+                        
                     </div>
                     <div class="star-rating">
                         {% for star in i.full_stars %}
@@ -82,6 +87,7 @@
             <p>No restaurants found.</p>
         {% endfor %}
     </div>
+
     
 
     <script>
