@@ -33,7 +33,7 @@ def index(request):
     cuisine_types_text = []
     for cuisine_type in cuisine_types:
         cuisine_types_text.append(cuisine_type.name)
-    context_dict = {'restaurants': restaurants, 'cuisine_types': cuisine_types_text}
+    context_dict = context_dict | {'restaurants': restaurants, 'cuisine_types': cuisine_types_text} 
     return render(request, 'food_advisor/index.html', context_dict)
 
 def register_user(request):
@@ -64,6 +64,27 @@ def register_user(request):
                              'profile_form': profile_form,
                              'registered': registered})
 
+@login_required
+def manage_restaurant(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id, manager__user=request.user)
+    dishes = Dish.objects.filter(restaurant=restaurant)
+    
+    if request.method == "POST":
+        form = RestaurantEditForm(request.POST, request.FILES, instance=restaurant)
+        if form.is_valid():
+            form.save()
+            
+            return redirect('food_advisor:show_restaurant', restaurant_id_slug=restaurant.id)
+    else:
+        form = RestaurantEditForm(instance=restaurant)
+
+    context_dict = {
+    'restaurant_form': form,  
+    'restaurant': restaurant,
+    'dishes': dishes,
+}
+    return render(request, 'food_advisor/manage_restaurant.html', context_dict)
+
 def register_manager(request):
     registered = False
     if request.method == 'POST':
@@ -77,9 +98,8 @@ def register_manager(request):
             manager_profile.user = manager
             manager_profile.isManager = True
             manager_profile.save()
-            restaurant = restaurant_form.save(commit=False)
-            restaurant.manager = manager_profile
-            restaurant.save()
+            restaurant_form.instance.manager = manager_profile
+            restaurant_form.save()
             registered = True
 
             login(request, manager)
