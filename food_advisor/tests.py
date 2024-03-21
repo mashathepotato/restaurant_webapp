@@ -3,6 +3,9 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from food_advisor.models import CuisineType, Restaurant, Dish, Review
 import os
+import restaurant_webapp
+from restaurant_webapp import *
+
 
 class TestHomePage(TestCase):
     def setUp(self):
@@ -28,7 +31,55 @@ class TestHomePage(TestCase):
         response = self.client.get(reverse("index"))
         self.assertEqual(response.status_code, 200)
 
+    def test_manager_login_success(self):
+        self.client.login(
+            username="username",
+            password="userpassword"
+        )
 
+
+class TestRegisterPage(TestCase):
+    def setUp(self):
+        self.base_dir = os.getcwd()
+        self.template_dir = os.path.join(self.base_dir, 'template')
+        self.about_response = self.client.get(reverse('food_advisor:registerUser'))
+
+    def test_successful_deployment(self):
+        response = self.client.get(reverse("food_advisor:registerUser"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_guest_account(self):
+        response = self.client.get(reverse("food_advisor:registerUser"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_user_login_success(self):
+        self.client.login(
+            username="usertest",
+            password="passwordtest"
+        )
+
+        response = self.client.get(reverse("food_advisor:registerUser"))
+        self.assertEqual(response.status_code, 200)
+
+
+class TestLoginPage(TestCase):
+    def setUp(self):
+        self.base_dir = os.getcwd()
+        self.template_dir = os.path.join(self.base_dir, 'templates')
+        self.about_response = self.client.get(reverse('food_advisor:signin'))
+    
+    def test_successful_deployment(self):
+        response = self.client.get(reverse("food_advisor:signin"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_template_exists(self):
+        template_check = os.path.isfile(os.path.join(os.path.join(os.getcwd(), "templates/food_advisor"), "login.html"))
+        self.assertTrue(template_check)
+
+    def test_template_account_usage(self):
+        self.assertTemplateUsed(self.about_response, "food_advisor/login.html")
+   
+   
 class RegisterManagerViewTests(TestCase):
     def setUp(self):
         self.client = Client()
@@ -53,43 +104,6 @@ class RegisterManagerViewTests(TestCase):
             'starRating': 4.5,
             'totalReviews': 100,
         }
-
-    # def test_register_manager(self):
-    #     response = self.client.post(reverse('register_manager'), {
-    #         **self.manager_data,
-    #         **self.restaurant_data
-    #     })
-
-    #     self.assertRedirects(response, reverse('food_advisor:index'))
-
-    #     self.assertTrue(User.objects.filter(username='test_manager').exists())
-    #     self.assertTrue(User.objects.get(username='test_manager').is_manager)
-    #     self.assertTrue(User.objects.get(username='test_manager').restaurant_set.exists())
-
-
-class UserLoginViewTests(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.user= User.objects.create_user(username='testuser', password='testpassword')
-
-    # def test_user_login_success(self):
-    #     response = self.client.post(reverse('user_login'), {'username': 'testuser', 'password': 'testpassword'})
-    #     self.assertRedirects(response, reverse('food_advisor:index'))
-    #     self.assertTrue('_auth_user_id' in self.client.session)
-    
-    # def test_user_login_inactive(self):
-    #     self.user.is_active = False
-    #     self.user.save()
-    #     response = self.client.post(reverse('user_login', {'username': 'testuser', 'password': 'testpassword'}))
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertContains(response, 'Your FoodAdvisor account is disabled.')
-    #     self.assertFalse('_auth_user_id' in self.client.session)
-
-    # def test_user_login_invalid_details(self):
-    #     response = self.client.post(reverse('user_login', {'username': 'testuser', 'password': 'testpassword'}))
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertContains(response, 'Invalid login details.')
-    #     self.assertFalse('_auth_user_id' in self.client.session)
 
 class ShowRestaurantViewTests(TestCase):
     def setUp(self):
