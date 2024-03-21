@@ -34,7 +34,7 @@
     <div class="row mb-4">
         <div class="col-md-8 col-lg-6 mx-auto">
             <select id="selectLeo" class="form-control" onchange="showSelectedValue()">
-                <option value="-1" selected>Filter by Cuisine</option>
+                <option value="-1" selected disabled>Filter by Cuisine</option>
                 <option value="-2">None</option>
                 {% for option in cuisine_types %}
                     {% if prev_filter and option == prev_filter %}

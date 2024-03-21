@@ -103,16 +103,17 @@ function initMap() {
     var address = '{{ restaurant.address }}';
 
     geocoder.geocode({ 'address': address }, function(results, status) {
-        if (status === 'OK') {
-            var map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 15,
-                center: results[0].geometry.location
-            });
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 15,
+            center: {lat: -34.397, lng: 150.644} // default center if geocoding fails
+        });
 
+        if (status === 'OK' && results && results[0]) {
             var marker = new google.maps.Marker({  map: map,
                 position: results[0].geometry.location,
                 title: '{{ restaurant.name }}'
             });
+            map.setCenter(results[0].geometry.location);
         } else {
             console.error('Geocode was not successful for the following reason: ' + status);
         }
@@ -123,5 +124,3 @@ function initMap() {
 <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap"></script>
 
 {% endblock content %}
-
-               

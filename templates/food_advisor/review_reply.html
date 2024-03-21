@@ -8,7 +8,7 @@
 {% endblock title %}
 
 {% block content %}
-    <div class="col-md-6">
+    <div class="container mt-5">
         <div class="card mb-3">
             <div class="card-body">
                 {% with ''|center:review.starRating as range %}
@@ -28,7 +28,7 @@
         <form enctype="multipart/form-data" method="post" action="{% url 'food_advisor:review_reply' restaurant_id_slug=restaurant_id review_id=review.id %}">
             {% csrf_token %}
             {% bootstrap_form review_form %}
-            <button  type="submit" class="btn btn-primary">Submit Review</button>
+            <button  type="submit" class="btn btn-primary">Submit Response</button>
         </form>
     </div>
 {% endblock content %}

@@ -26,7 +26,7 @@
                                 <p class="card-text">User: {{ review.user }}</p>
                                 <p class="card-text">Posted at: {{ review.date }}</p>
                                 {% if review.replyContent %}
-                                <p class="card-text">Reply Content: {{review.replyContent }}</p>
+                                <p class="card-text">Owner's Response: {{review.replyContent }}</p>
                                 {% endif %}
                                 {% if user.is_authenticated and user == restaurant.manager.user %}
                                     <a href="{% url 'food_advisor:review_reply' restaurant_id_slug=restaurant.id review_id=review.id %}" class="btn btn-primary">Reply</a>

@@ -17,7 +17,7 @@ from django.shortcuts import render, get_object_or_404
 def index(request):
     context_dict = {}
     cuisine_types = CuisineType.objects.all()
-    search_query = request.GET.get('search', '')  # 从URL的查询参数中获取'search'参数的值
+    search_query = request.GET.get('search', '')
     filter_query = request.GET.get('filter', '')
     if search_query:
         restaurants = Restaurant.objects.filter(name__icontains=search_query)
@@ -33,9 +33,8 @@ def index(request):
     cuisine_types_text = []
     for cuisine_type in cuisine_types:
         cuisine_types_text.append(cuisine_type.name)
-    context_dict = context_dict | {'restaurants': restaurants, 'cuisine_types': cuisine_types_text}
+    context_dict = {'restaurants': restaurants, 'cuisine_types': cuisine_types_text}
     return render(request, 'food_advisor/index.html', context_dict)
-
 
 def register_user(request):
     registered = False

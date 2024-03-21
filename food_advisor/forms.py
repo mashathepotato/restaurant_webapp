@@ -79,7 +79,7 @@ class LoginForm(AuthenticationForm):
 
 
 class ReplyContentForm(forms.ModelForm):
-    replyContent = forms.CharField(max_length=1280, help_text="Type review reply content here:")
+    replyContent = forms.CharField(max_length=1280, label="Owner's Response")
 
     class Meta:
         model = Review

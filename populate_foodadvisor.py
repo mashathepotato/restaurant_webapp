@@ -9,7 +9,7 @@ from food_advisor.models import User, Restaurant, Review, Dish, UserProfile, Cui
 import datetime
 
 def populate():
-    cuisine_types = ['Indian','Chinese','Italian','French','British']
+    cuisine_types = ['Indian','Chinese','Italian','French','British','American']
     for type in cuisine_types:
         c = CuisineType.objects.get_or_create(name=type)[0]
         c.name=type
@@ -70,7 +70,7 @@ def populate():
             'close':datetime.time(0,0),
             'starRating':3.66666,
             'totalReviews':3,
-            'cuisineTypes':['British'],
+            'cuisineTypes':['American'],
             'imageName':'iHop.jpg'}],
 
         [{'username':'SubwayManager',
@@ -79,13 +79,13 @@ def populate():
         {'name':'Subway',
             'dishes': subway_dishes, 
             'reviews': subway_reviews, 
-            'address':'98 False Lane',
+            'address':'9-11 Merkland St, Partick, Glasgow, UK',
             'Manager':'SubwayManager',
             'open':datetime.time(7,0),
             'close':datetime.time(19,0),
             'starRating':2.33333,
             'totalReviews':3,
-            'cuisineTypes':['British'],
+            'cuisineTypes':['American'],
             'imageName':'subway.webp'}],
 
         [{'username':'GreggsManager',
@@ -94,7 +94,7 @@ def populate():
           {'name':'Greggs',
             'dishes': greggs_dishes, 
             'reviews': greggs_reviews, 
-            'address':'77 Mirage St',
+            'address':'77 Mirage Blvd, Barnegat, NJ, USA',
             'Manager':'GreggsManager',
             'open':datetime.time(5,0),
             'close':datetime.time(21,0),
