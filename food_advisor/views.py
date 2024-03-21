@@ -3,23 +3,38 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Restaurant, Review, User, Dish
+from .models import Restaurant, Review, User, Dish, UserProfile, CuisineType
 from django.contrib.auth.forms import  AuthenticationForm 
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from .forms import DishForm, ManagerRegistrationForm, UserForm, UserProfileForm, ManagerRegistrationForm, RestaurantEditForm, ReviewForm
+from .forms import DishForm, ManagerRegistrationForm, UserForm, UserProfileForm, ManagerRegistrationForm, RestaurantEditForm, ReviewForm, ReplyContentForm
 from django.contrib.auth.forms import UserCreationForm  
 from django.shortcuts import render, get_object_or_404
 
 def index(request):
-    restaurants = Restaurant.objects.all()
+    context_dict = {}
+    cuisine_types = CuisineType.objects.all()
+    search_query = request.GET.get('search', '')  # 从URL的查询参数中获取'search'参数的值
+    filter_query = request.GET.get('filter', '')
+    if search_query:
+        restaurants = Restaurant.objects.filter(name__icontains=search_query)
+        context_dict['prev_search'] = search_query
+    elif filter_query and (filter_query != "None"):
+        restaurants = Restaurant.objects.filter(cuisineTypes__name__icontains=filter_query)
+        context_dict['prev_filter'] = filter_query
+    else:
+        restaurants = Restaurant.objects.all()
     for restaurant in restaurants:
         restaurant.full_stars = range(restaurant.getIntegerStars())
         restaurant.empty_stars = range(5 - restaurant.getIntegerStars())
-    return render(request, 'food_advisor/index.html', {'restaurants': restaurants})
+    cuisine_types_text = []
+    for cuisine_type in cuisine_types:
+        cuisine_types_text.append(cuisine_type.name)
+    context_dict = context_dict | {'restaurants': restaurants, 'cuisine_types': cuisine_types_text}
+    return render(request, 'food_advisor/index.html', context_dict)
 
 
 def register_user(request):
@@ -69,6 +84,7 @@ def register_manager(request):
             registered = True
 
             login(request, manager)
+            return redirect('food_advisor:index')
         else:
             print(user_form.errors, manager_profile_form.errors,restaurant_form.errors)
     else:
@@ -95,7 +111,7 @@ def user_login(request):
                     login(request, user)
                     return redirect(reverse('food_advisor:index'))
                 else:
-                    messages(request, "Your foodAdvisor account is disabled.")
+                    messages.error(request, "Your foodAdvisor account is disabled.")
             else:
                 messages.error(request, "Invalid login details.")
         else:
@@ -158,7 +174,8 @@ def show_restaurant(request, restaurant_id_slug):
     try:
         # Get restaurant from id, if not exists, throw error.
         restaurant = Restaurant.objects.get(id=restaurant_id_slug)
-
+        restaurant.full_stars = range(restaurant.getIntegerStars())
+        restaurant.empty_stars = range(5 - restaurant.getIntegerStars())
         # Retrieve all dishes from restaurant.
         dishes = Dish.objects.filter(restaurant=restaurant)
 
@@ -177,7 +194,6 @@ def show_restaurant(request, restaurant_id_slug):
 
 def show_restaurant_reviews(request, restaurant_id_slug):
     context_dict = {}
-
     try:
         restaurant = Restaurant.objects.get(id=restaurant_id_slug)
 
@@ -187,14 +203,26 @@ def show_restaurant_reviews(request, restaurant_id_slug):
         context_dict['restaurant'] = restaurant
         context_dict['restaurant_id']=restaurant_id_slug
 
-        if request.method == 'POST':
-            review_form = ReviewForm(request.POST)
+        userNotReviewed = True
+        for review in reviews:
+            if review.user == request.user:
+                userNotReviewed = False
+        context_dict['userNotReviewed'] = userNotReviewed
 
+        if request.method == 'POST' and userNotReviewed:
+            review_form = ReviewForm(request.POST)
             if review_form.is_valid():
                 review = review_form.save(commit=False)
                 review.restaurant = restaurant
                 review.user = request.user
                 review.save()
+                new_total_stars = restaurant.totalReviews * restaurant.starRating
+                new_total_reviews = restaurant.totalReviews
+                new_total_stars += int(review_form.cleaned_data['starRating'])
+                new_total_reviews += 1
+                restaurant.totalReviews = new_total_reviews
+                restaurant.starRating = new_total_stars / new_total_reviews
+                restaurant.save()
                 return redirect(reverse('food_advisor:show_restaurant_reviews', kwargs={'restaurant_id_slug':restaurant_id_slug}))  
             else:
                 print(review_form.errors)
@@ -209,6 +237,32 @@ def show_restaurant_reviews(request, restaurant_id_slug):
 
     return render(request, 'food_advisor/show_restaurant_reviews.html', context=context_dict)
 
+def review_reply(request, review_id, restaurant_id_slug):
+    context_dict = {}
+    try:
+        review = Review.objects.get(id=review_id)
+        restaurant = Restaurant.objects.get(id=restaurant_id_slug)
+        context_dict['review'] = review
+        context_dict['restaurant_id']=restaurant_id_slug
+
+        if request.method == 'POST':
+            review_form = ReplyContentForm(request.POST, instance=review)
+
+            if review_form.is_valid():
+                review.save()
+                return redirect(reverse('food_advisor:show_restaurant_reviews', kwargs={'restaurant_id_slug':review.restaurant.id}))  
+            else:
+                print(review_form.errors)
+        else:
+            review_form = ReplyContentForm(instance=review)
+            context_dict['review_form'] = review_form
+
+    except Review.DoesNotExist:
+        context_dict['review'] = None
+
+    return render(request, 'food_advisor/review_reply.html', context=context_dict)
+
+
 @login_required
 def manage_restaurant(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id, manager__user=request.user)
@@ -218,16 +272,16 @@ def manage_restaurant(request, restaurant_id):
         form = RestaurantEditForm(request.POST, request.FILES, instance=restaurant)
         if form.is_valid():
             form.save()
-            # Use restaurant_id_slug with a numeric ID for redirection
+            
             return redirect('food_advisor:show_restaurant', restaurant_id_slug=restaurant.id)
     else:
         form = RestaurantEditForm(instance=restaurant)
 
     context_dict = {
-        'form': form,
-        'restaurant': restaurant,
-        'dishes': dishes,
-    }
+    'restaurant_form': form,  
+    'restaurant': restaurant,
+    'dishes': dishes,
+}
     return render(request, 'food_advisor/manage_restaurant.html', context_dict)
 
 

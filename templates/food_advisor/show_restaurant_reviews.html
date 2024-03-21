@@ -25,6 +25,12 @@
                                 <p class="card-text">{{ review.content }}</p>
                                 <p class="card-text">User: {{ review.user }}</p>
                                 <p class="card-text">Posted at: {{ review.date }}</p>
+                                {% if review.replyContent %}
+                                <p class="card-text">Reply Content: {{review.replyContent }}</p>
+                                {% endif %}
+                                {% if user.is_authenticated and user == restaurant.manager.user %}
+                                    <a href="{% url 'food_advisor:review_reply' restaurant_id_slug=restaurant.id review_id=review.id %}" class="btn btn-primary">Reply</a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -35,15 +41,19 @@
         {% endif %}
     </div>
 
-    <div>
-        {% if user.is_authenticated %}
-        <form method="post" action="{% url 'food_advisor:show_restaurant_reviews' restaurant_id_slug=restaurant_id %}">
-            {% csrf_token %}
-            <input type="hidden" name="restaurant_id" value="{{ restaurant_id }}">
-            <input type="hidden" name="user" value="{{ user.id }}">
-            {% bootstrap_form review_form %}
-            <button type="submit" class="btn btn-primary">Submit Review</button>
-        </form>
+    <div class="container mt-5">
+        {% if user.is_authenticated and not user.user_profile.isManager %}
+            {% if userNotReviewed %}
+                <form method="post" action="{% url 'food_advisor:show_restaurant_reviews' restaurant_id_slug=restaurant_id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="restaurant_id" value="{{ restaurant_id }}">
+                    <input type="hidden" name="user" value="{{ user.id }}">
+                    {% bootstrap_form review_form %}
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </form>
+            {% else %}
+                <p>You have already reviewed this restaurant.</p>
+            {% endif %}
         {% endif %}
     </div>
 

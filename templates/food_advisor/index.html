@@ -12,7 +12,7 @@
     <div class="row mb-4">
         <div class="col-md-8 col-lg-6 mx-auto">
             <form class="form-inline d-flex justify-content-center">
-                <input class="form-control mr-sm-2 w-75" type="search" placeholder="Search" aria-label="Search" name="search" required>
+                <input class="form-control mr-sm-2 w-75" type="search" placeholder="Search" aria-label="Search" value="{{ prev_search }}" name="search" required>
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
             </form>
         </div>
@@ -34,61 +34,70 @@
     <div class="row mb-4">
         <div class="col-md-8 col-lg-6 mx-auto">
             <select id="selectLeo" class="form-control" onchange="showSelectedValue()">
-                <option value="-1" disabled selected>Filter by Cuisine</option>
-                <option value="0">Coffee</option>
-                <option value="1">Chinese</option>
-                <option value="2">Mexican</option>
-                <option value="3">Italian</option>
-                <option value="4">Clear Filters</option>
+                <option value="-1" selected>Filter by Cuisine</option>
+                <option value="-2">None</option>
+                {% for option in cuisine_types %}
+                    {% if prev_filter and option == prev_filter %}
+                    <option value="{{ forloop.counter }}" selected>{{ option }}</option>
+                    {% else %}
+                    <option value="{{ forloop.counter }}">{{ option }}</option>
+                    {% endif %}
+                {% endfor %}
             </select>
         </div>
     </div>
 
     <!-- Image Gallery Grid -->
+    <!-- Image Gallery Grid -->
     <div class="row g-4">
         {% for i in restaurants %}
-            <!-- 添加 mb-4 类在卡片底部留出空间 -->
             <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <a href="{% url 'food_advisor:show_restaurant' restaurant_id_slug=i.id %}">
-                        {% if i.image %}
-                            <img src="{{ i.image.url }}" class="card-img-top" alt="{{ i.name }}">
-                        {% else %}
-                            <img src="{% static 'images/default.jpg' %}" class="card-img-top" alt="Default Image">
-                        {% endif %}
-                    </a>
-                    <div class="card-body">
-                        <h5 class="card-title">{{ i.name }}</h5>
-                        <p class="card-text">{{ i.body|slice:'100' }}...</p>
-                    </div>
-                    <div class="star-rating">
-                        {% for star in i.full_stars %}
-                            <span class="fas fa-star"></span> <!-- full stars -->
-                        {% endfor %}
-                        {% for star in i.empty_stars %}
-                            <span class="far fa-star"></span> <!-- empty stars -->
-                        {% endfor %}
-                    </div>
-                    <div class="card-footer bg-white border-top-0">
-                        <div class="tags">
-                            {% for tag in i.tags.all %}
-                                <span class="badge badge-info">{{ tag }}</span>
+                <a href="{% url 'food_advisor:show_restaurant' restaurant_id_slug=i.id %}" style="text-decoration:none; color:black;">
+                    <div class="card h-100 shadow-sm">
+                            {% if i.image %}
+                                <img src="{{ i.image.url }}" class="card-img-top" alt="{{ i.name }}">
+                            {% else %}
+                                <img src="{% static 'images/default.jpg' %}" class="card-img-top" alt="Default Image">
+                            {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ i.name }}</h5>
+                            <!-- Display the latest review content here -->
+                            <p class="user-review">"{{ i.get_latest_review_content }}"</p>
+                            <div class="star-rating">
+                                <!-- Star rating display -->
+                            </div>
+                            
+                        </div>
+                        <div class="star-rating" style="padding-left: 17pt;">
+                            {% for star in i.full_stars %}
+                                <span class="fas fa-star"></span> <!-- full stars -->
+                            {% endfor %}
+                            {% for star in i.empty_stars %}
+                                <span class="far fa-star"></span> <!-- empty stars -->
                             {% endfor %}
                         </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <div class="tags">
+                                {% for tag in i.tags.all %}
+                                    <span class="badge badge-info">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
         {% empty %}
             <p>No restaurants found.</p>
         {% endfor %}
     </div>
+
     
 
     <script>
         function showSelectedValue(){
             var foodType = document.getElementById("selectLeo");
             var selectedText = foodType.options[foodType.selectedIndex].text;
-            var newUrl = "{% url 'index' %}?search=" + selectedText;
+            var newUrl = "{% url 'index' %}?filter=" + selectedText;
 
             window.location.href = newUrl;
         }

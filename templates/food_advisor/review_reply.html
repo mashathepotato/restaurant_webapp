@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap4 %}
+
+
+{% block title %}
+    Review Reply Form
+{% endblock title %}
+
+{% block content %}
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-body">
+                {% with ''|center:review.starRating as range %}
+                {% for _ in range %}
+                    <img src="{% static 'images/star.png' %}" class="img-fluid" style="height: 25px;">
+                {% endfor %}
+                {% endwith %}
+                <br /><br />
+                <p class="card-text">{{ review.content }}</p>
+                <p class="card-text">User: {{ review.user }}</p>
+                <p class="card-text">Posted at: {{ review.date }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <form enctype="multipart/form-data" method="post" action="{% url 'food_advisor:review_reply' restaurant_id_slug=restaurant_id review_id=review.id %}">
+            {% csrf_token %}
+            {% bootstrap_form review_form %}
+            <button  type="submit" class="btn btn-primary">Submit Review</button>
+        </form>
+    </div>
+{% endblock content %}
