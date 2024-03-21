@@ -3,7 +3,7 @@
 {% load bootstrap4 %}
 
 {% block title %}
-    Food Advisor - {{ restaurant.name }} (Manager Interface)
+    Food Advisor Manager Interface
 {% endblock %}
 
 {% block content %}
@@ -12,19 +12,13 @@
         <h2>Manage Restaurant Information</h2>
         <form enctype="multipart/form-data" id="restaurant_manage_form" method="post" action="{% url 'food_advisor:manage_restaurant' restaurant.id %}" class="needs-validation" novalidate>
             {% csrf_token %}
-            <div class="form-row">
-                {% for field in form.visible_fields %}
-                    <div class="col-md-4 mb-3">
-                        {% bootstrap_field field show_label=True %}
-                    </div>
-                {% endfor %}
-            </div>
+            {% bootstrap_form restaurant_form %}
             <button class="btn btn-primary" type="submit">Update Restaurant Info</button>
         </form>
 
-        <!-- Dish Management -->
+        <!-- Begin Dish Management Section -->
         <h3 class="mt-5">Manage Dishes</h3>
-        <form id="add-dish-form" method="post" action="#" data-restaurant-id="{{ restaurant.id }}"> <!-- Use '#' for action since AJAX handles the post -->
+        <form id="add-dish-form" method="post" action="#" data-restaurant-id="{{ restaurant.id }}"> 
             {% csrf_token %}
             <div class="form-group">
                 <input type="text" name="name" class="form-control" placeholder="Dish Name" required />
@@ -46,6 +40,7 @@
             <p>No dishes yet.</p>
             {% endfor %}
         </div>
+        <!-- End Dish Management Section -->
     </div>
 {% else %}
     <div class="alert alert-danger" role="alert">

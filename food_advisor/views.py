@@ -271,16 +271,16 @@ def manage_restaurant(request, restaurant_id):
         form = RestaurantEditForm(request.POST, request.FILES, instance=restaurant)
         if form.is_valid():
             form.save()
-            # Use restaurant_id_slug with a numeric ID for redirection
+            
             return redirect('food_advisor:show_restaurant', restaurant_id_slug=restaurant.id)
     else:
         form = RestaurantEditForm(instance=restaurant)
 
     context_dict = {
-        'form': form,
-        'restaurant': restaurant,
-        'dishes': dishes,
-    }
+    'restaurant_form': form,  
+    'restaurant': restaurant,
+    'dishes': dishes,
+}
     return render(request, 'food_advisor/manage_restaurant.html', context_dict)
 
 

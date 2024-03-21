@@ -52,9 +52,10 @@ function addDish(form) {
     .then(data => {
         if (data.id) {
             const dishesList = document.querySelector('#dishes-list');
-            const newDishElement = document.createElement('div');
+            const newDishElement = document.createElement('div'); // could be a problem
             newDishElement.id = `dish-${data.id}`;
-            newDishElement.innerHTML = `Name: ${data.name}, Price: ${data.price} <button class="delete-dish-button" data-dish-id="${data.id}">Delete</button>`;
+            newDishElement.className = "alert alert-secondary d-flex justify-content-between align-items-center mt-2";
+            newDishElement.innerHTML = `Name: ${data.name}, Price: ${data.price} <button class="btn btn-danger delete-dish-button" data-dish-id="${data.id}">Delete</button>`;
             
             newDishElement.querySelector('.delete-dish-button').addEventListener('click', function() {
                 deleteDish(data.id);
